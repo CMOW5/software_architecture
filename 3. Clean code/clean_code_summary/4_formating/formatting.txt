@@ -1,0 +1,130 @@
+Chapter 5. Formatting
+
+
+1. Vertical Openness between concepts
+
+  Nearly all code is read left to right and top to bottom. Each line represents an expression or
+  a clause, and each group of lines represents a complete thought. Those thoughts should be
+  separated from each other with blank lines.
+
+  example => blank lines that separate the package declaration, the import(s), and each of the functions
+
+
+
+2. Vertical Density
+
+  vertical density implies close association. So lines
+  of code that are tightly related should appear vertically dense
+
+
+
+3. Vertical Distance.
+
+  Have you ever chased your tail through a class, hopping from one function to the next,
+  scrolling up and down the source file, trying to divine how the functions relate and
+  operate, only to get lost in a rat’s nest of confusion?
+
+  Concepts that are closely related should be kept vertically close to each other.
+
+  then closely related concepts should not be separated into different files unless you have a very good
+  reason. Indeed, this is one of the reasons that protected variables should be avoided.
+
+
+
+4. Variable declarations 
+
+  Variables should be declared as close to their usage as possible. Because our functions are very short, 
+  local variables should appear a the top of each function.
+
+  Control variables for loops should usually be declared within the loop statement.
+
+  - instance variables:
+
+    should be declared at the top of the class. This should not increase the vertical distance of these variables, 
+    because in a well-designed class, they are used by many, if not all, of the methods of the class.
+
+    he important thing is for the instance variables to be declared in one well-known place. 
+    Everybody should know where to go to see the declarations.
+
+
+ 
+5. Dependent functions
+
+  Dependent Functions. If one function calls another, they should be vertically close,
+  and the caller should be above the callee, if at all possible. This gives the program a natural flow.
+
+  In general we want function call dependencies to point in the downward direction. That is,
+  a function that is called should be below a function that does the calling
+
+
+
+6. Conceptual affinity.
+
+  Certain bits of code want to be near other bits. They have a certain conceptual affinity. 
+  The stronger that affinity, the less vertical distance there should be between them. example:  
+  
+   static public void assertTrue(String message, boolean condition) {
+    if (!condition)
+      fail(message);
+   }
+    
+   static public void assertTrue(boolean condition) {
+      assertTrue(null, condition);
+   }
+   
+   static public void assertFalse(String message, boolean condition) {
+      assertTrue(message, !condition);
+   }
+
+  These functions have a strong conceptual affinity because they share a common naming
+  scheme and perform variations of the same basic task. The fact that they call each other is
+  secondary. Even if they didn’t, they would still want to be close together.
+
+
+
+7. Horizontal formatting
+
+  we should strive to keep our lines short.
+
+  We use horizontal white space to associate things that are strongly related and disassociate
+  things that are more weakly related
+
+  private void measureLine(String line) {
+    lineCount++;
+    int lineSize = line.length();
+    totalChars += lineSize;
+    lineWidthHistogram.addLine(lineSize, lineCount);
+    recordWidestLine(lineSize);
+  }
+
+  look at the space in the = assigments, its used to accentuate them. same with the comma in the
+  functions calls.
+
+  I didn’t put spaces between the function names and the opening parenthesis. 
+  This is because the function and its arguments are closely related.
+
+
+
+8. Indentation.
+
+  Without indentation, programs would be virtually unreadable by humans.
+
+  - break indentation
+
+    You should avoid collapsing scopes down to one line like this:
+
+    public CommentWidget(ParentWidget parent, String text){super(parent, text);}
+    public String render() throws Exception {return ""; }
+
+
+9. Team rules
+
+  A team of developers should agree upon a single formatting style, and then
+  every member of that team should use that style. We want the software to have a
+  consistent style. We don’t want it to appear to have been written by a bunch of disagreeing
+  individuals.
+
+
+
+
+    
