@@ -1,0 +1,174 @@
+Chapter 4. Comments
+
+
+One of the more common motivations for writing comments is bad code. We write a mod-
+ule and we know it is confusing and disorganized. We know it’s a mess. So we say to our-
+selves, “Ooh, I’d better comment that!” No! You’d better clean it!
+
+instead of this
+
+// Check to see if the employee is eligible for full benefits
+if ((employee.flags & HOURLY_FLAG) &&
+	(employee.age > 65))
+
+  
+do this
+
+if (employee.isEligibleForFullBenefits())
+
+
+1. Good comments	
+
+	- legal comments:
+
+    // Copyright (C) 2003,2004,2005 by Object Mentor, Inc. All rights reserved.
+    // Released under the terms of the GNU General Public License version 2 or later.
+
+
+  - informative comments:
+
+    // format matched kk:mm:ss EEE, MMM dd, yyyy
+    Pattern timeMatcher = Pattern.compile("\\d*:\\d*:\\d* \\w*, \\w* \\d*, \\d*");
+
+  
+  - explanation of intent:
+
+    //This is our best attempt to get a race condition
+    //by creating large number of threads.
+    for (int i = 0; i < 25000; i++) {
+        WidgetBuilderThread widgetBuilderThread =
+        new WidgetBuilderThread(widgetBuilder, text, parent, failFlag);
+        Thread thread = new Thread(widgetBuilderThread);
+        thread.start();
+    }
+
+  - clarification
+
+    when its part of the standard library, or in code that you cannot alter, 
+    then a helpful clarifying comment can be useful.
+
+    assertTrue(a.compareTo(a) == 0); // a == a
+    assertTrue(a.compareTo(b) != 0); // a != b 
+    assertTrue(ab.compareTo(ab) == 0); // ab == ab
+  
+
+  - warning of consequences 
+
+    // Don't run unless you
+    // have some time to kill.
+    public void _testWithReallyBigFile()
+    {
+      writeLinesToFile(10000000);
+      .....
+    }
+ 
+   
+  - TODO comments
+
+  - Amplification
+
+    A comment may be used to amplify the importance of something that may otherwise seem
+    inconsequential.
+
+      String listItemContent = match.group(3).trim();
+      // the trim is real important. It removes the starting
+      // spaces that could cause the item to be recognized
+      // as another list.
+      new ListItemWidget(this, listItemContent, this.level + 1);
+      return buildList(text.substring(match.end()));
+
+    
+  - Javadoc in public API
+
+    If you are writing a public API, then you should certainly write good javadocs for it.
+    But keep in mind the rest of the advice in this chapter. Javadocs can be just as misleading,
+    nonlocal, and dishonest as any other kind of comment.
+
+
+
+2. BAD COMMENTS
+
+  
+  - Mumbling
+
+    Any comment that forces you to look in another module for the meaning of that
+    comment has failed to communicate to you and is not worth the bits it consumes.
+
+  - Redundant Comments
+
+    What purpose does this comment serve? It’s certainly not more informative than the
+    code. It does not justify the code, or provide intent or rationale. It is not easier to read than
+    the code.
+
+  - Missleading comments
+
+  - Mandated comments
+
+    It is just plain silly to have a rule that says that every function must have a javadoc, or
+    every variable must have a comment. Comments like this just clutter up the code, propa-
+    gate lies, and lend to general confusion and disorganization.
+
+  - Journal comments
+
+    Sometimes people add a comment to the start of a module every time they edit it. These
+    comments accumulate as a kind of journal, or log, of every change that has ever been
+    made.
+
+  - Noise comments
+
+    /**
+    * Default constructor.
+    */
+    protected AnnualDateRule() {
+    }
+
+    or 
+
+    /** The day of the month. */
+    private int dayOfMonth;
+
+
+  -  Closing brace comment
+
+    dont do this
+
+    if {
+      .....
+    } // if
+
+    if you find yourself wanting to mark your closing braces, try to shorten your functions instead.
+
+  - Commented-out code
+
+    Why are those lines of code commented? Are they important? Were they left as
+    reminders for some imminent change? Or are they just cruft that someone commented-out
+    years ago and has simply not bothered to clean up.
+    There was a time, back in the sixties, when commenting-out code might have been
+    useful. But we’ve had good source code control systems for a very long time now.
+
+  
+  - Non local information
+
+    If you must write a comment, then make sure it describes the code it appears near. Don’t
+    offer systemwide information in the context of a local comment
+
+  
+  - Too much information
+
+    
+  - Inobvious Connection
+
+    The connection between a comment and the code it describes should be obvious.
+
+  
+  - Function headers
+
+    Short functions don’t need much description. A well-chosen name for a small function that
+    does one thing is usually better than a comment header.
+
+
+  - javadocs in non public code
+
+    Generating javadoc pages for the classes and functions inside a
+    system is not generally useful, and the extra formality of the javadoc comments amounts
+    to little more than cruft and distraction.
