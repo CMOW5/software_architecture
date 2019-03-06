@@ -1,0 +1,288 @@
+Chapter 3. Functions
+
+
+1. Small
+
+  Functions should hardly ever be 20 lines long.
+
+  Each function should be transparently obvious. Each should tell a story. 
+  And each should led you to the next in a compelling order
+
+  try to make the blocks within if statements, else statements, while statements one line long.
+  Probably that line should be a function call.
+
+
+2.  Do one thing
+
+  Functions should do one thing. they should do it well. They should do it only
+
+  when we say "one thing", we really mean "one level of abstraction". 
+  If a function does only those steps that are one level below the stated name of the
+  function, then the function is doing one thing. After all, the reason we write functions is to
+  decompose a larger concept (in other words, the name of the function) into a set of steps at
+  the next level of abstraction.
+
+  A way to know that a function is doing more than “one thing” is if you can
+  extract another function from it with a name that is not merely a restatement of its imple-
+  mentation.
+
+  Functions that do one thing cannot be reasonably divided into sections (such as declarations, initializations, 
+  sieve, etc).
+
+
+3. One Level of Abstraction per function
+
+  In order to make sure our functions are doing “one thing,” we need to make sure that the statements within 
+  our function are all at the same level of abstraction
+
+
+4. Reading Code from Top to Bottom: The Stepdown Rule
+
+  We want the code to read like a top-down narrative. 5 We want every function to be followed by those at the 
+  next level of abstraction so that we can read the program, descending one level of abstraction at a time as 
+  we read down the list of functions.
+
+
+5. Switch statements
+
+  Unfortunately we can’t always avoid switch statements, but we can make sure that each switch 
+  statement is buried in a low-level class and is never repeated. We do this, of course, with
+  polymorphism.
+
+  One general rule for switch statements is that they can be tolerated if they appear
+  only once, are used to create polymorphic objects, and are hidden behind an inheritance
+  relationship so that the rest of the system can’t see them.
+
+
+6. Use Descriptive names
+
+  The smaller and more focused a function is, the easier it is to choose a descriptive
+  name.
+
+  Don’t be afraid to make a name long. A long descriptive name is better than a short
+  enigmatic name. A long descriptive name is better than a long descriptive comment. Use
+  a naming convention that allows multiple words to be easily read in the function names,
+  and then make use of those multiple words to give the function a name that says what
+  it does.
+
+
+7. Function arguments
+
+  The ideal number of arguments for a function is zero (niladic). Next comes one (monadic), followed
+  closely by two (dyadic). Three arguments (triadic) should be avoided where possible. More than three
+  (polyadic) requires very special justification—and then shouldn’t be used anyway.
+
+
+  The argument should be at the same level of abstraction than the function name.
+
+  Arguments are even harder from a testing point of view. Imagine the difficulty of
+  writing all the test cases to ensure that all the various combinations of arguments work
+  properly. If there are no arguments, this is trivial. If there’s one argument, it’s not too hard.
+  With two arguments the problem gets a bit more challenging. With more than two argu-
+  ments, testing every combination of appropriate values can be daunting.
+
+
+8. Monadic functions
+
+  there are three common types of monadic functions
+
+  - asking a question about an argument => boolean FileExists("MyFile")
+
+  - operating on that argument, transforming it into something else and returning it.
+    => InputStream fileOpen("MyFile").
+
+  - events => void passwordAttemptFailedNtimes(int attemps)
+
+  Try to avoid any monadic functions that don’t follow these forms. 
+  Using an output argument instead of a return value for a transformation is confusing. 
+  If a function is going to transform its input argument, the transformation should appear as the return value.
+
+
+9. Flag arguments
+
+  Flag arguments are ugly. Passing a boolean into a function is a truly terrible practice. It
+  immediately complicates the signature of the method, loudly proclaiming that this function
+  does more than one thing. It does one thing if the flag is true and another if the flag is false!
+
+  example:
+    instead of    
+      render(boolean isSuite)
+    
+    you can use
+      if (isSuite)
+        renderForSuite()
+      else
+        renderForSingleTest()
+
+
+
+10. Dyadic function
+
+  A function with two arguments is harder to understand than a monadic function.
+  writeField(name) is easier to understand than writeField(output-Stream, name).
+
+  There are times, of course, where two arguments are appropriate. For example,
+  Point p = new Point(0,0). However, the two arguments in this case are ordered components 
+  of a single value! Whereas output-Stream and name have neither a natural cohesion,
+  nor a natural ordering.
+
+  Dyads aren’t evil, and you will certainly have to write them. However, you should be
+  aware that they come at a cost and should take advantage of what mechanims may be
+  available to you to convert them into monads. For example, you might make the
+  writeField method a member of outputStream so that you can say outputStream.
+  writeField(name) . Or you might make the outputStream a member variable of the current
+  class so that you don’t have to pass it. Or you might extract a new class like FieldWriter
+  that takes the outputStream in its constructor and has a write method.
+
+
+11. Triads
+
+  Functions that take three arguments are significantly harder to understand than dyads. The
+  issues of ordering, pausing, and ignoring are more than doubled. I suggest you think very
+  carefully before creating a triad.
+
+
+12. Argument Objects
+
+  consider the two constructors:
+    Circle makeCircle(double x, double y, double radius);
+    Circle makeCircle(Point center, double radius);  
+
+  Reducing the number of arguments by creating objects out of them may seem like
+  cheating, but it’s not. When groups of variables are passed together, the way x and
+  y are in the example above, they are likely part of a concept that deserves a name of its own.
+
+
+13. Argument List
+
+  consider:
+    String.format("%s worked %.2f hours.", name, hours);
+
+  If the variable arguments are all treated identically, as they are in the example above, then
+  they are equivalent to a single argument of type List.
+
+  public String format(String format, Object... args)
+
+
+14. Verbs and Keywords
+
+
+  the function and argument should form a very nice verb/noun pair. For example,
+  write(name) is very evocative. Whatever this “name” thing is, it is being “written.” An
+  even better name might be writeField(name) , which tells us that the “name” thing is a
+  “field.”
+
+
+15. Have no side effects
+
+  Side effects are lies. Your function promises to do one thing, but it also does other hidden
+  things. Sometimes it will make unexpected changes to the variables of its own class.
+  Sometimes it will make them to the parameters passed into the function or to system glo-
+  bals. In either case they are devious and damaging mistruths that often result in strange
+  temporal couplings and order dependencies.
+
+
+16. Output arguments
+
+  Arguments are most naturally interpreted as inputs to a function
+
+  for example:
+    appendFooter(s); // its not clear untill you see de definition
+
+    public void appendFooter(StringBuffer report)
+
+  Anything that forces you to check the function signature is equivalent to a double-take. It’s
+  a cognitive break and should be avoided.
+
+  In general output arguments should be avoided. If your function must change the state
+  of something, have it change the state of its owning object. 
+
+  for example:
+    report.appendFooter();
+
+
+17. Coomand query separation
+
+  Functions should either do something or answer something, but not both. Either your
+  function should change the state of an object, or it should return some information about
+  that object. Doing both often leads to confusion.
+
+  example, instead of
+
+    if (set("username", "unclebob")) ...
+
+  use
+
+    if (attributeExists("username")) {
+      setAttribute("username", "unclebob");
+      ...
+    }
+
+
+18. Prefer exceptions to returning error codes
+
+19. Extract try/catch blocks
+
+  example:
+
+  instead of 
+
+  try {
+    deletePage(page);
+    registry.deleteReference(page.name);
+    configKeys.deleteKey(page.name.makeKey());
+  }
+  catch (Exception e) {
+    logger.log(e.getMessage());
+  }
+
+
+  do:
+
+  public void delete(Page page) {
+    try {
+      deletePageAndAllReferences(page);
+    }
+    catch (Exception e) {
+      logError(e);
+    }
+  }
+  
+  private void deletePageAndAllReferences(Page page) throws Exception {
+    deletePage(page);
+    registry.deleteReference(page.name);
+    configKeys.deleteKey(page.name.makeKey());
+  }
+    
+  private void logError(Exception e) {
+    logger.log(e.getMessage());
+  }
+
+  In the above, the delete function is all about error processing. It is easy to understand
+  and then ignore. The deletePageAndAllReferences function is all about the processes of
+  fully deleting a page . Error handling can be ignored. This provides a nice separation that
+  makes the code easier to understand and modify
+
+  
+20. Error handling is one thing
+
+  Functions should do one thing. Error handing is one thing. Thus, a function that handles
+  errors should do nothing else. This implies (as in the example above) that if the keyword
+  try exists in a function, it should be the very first word in the function and that there
+  should be nothing after the catch/finally blocks.
+
+  Returning error codes usually implies that there is some class or enum in which all the
+  error codes are defined. Classes like this are a dependency magnet; many other classes must import and use
+  them. Thus, when the Error enum changes, all those other classes need to be recompiled
+  and redeployed.
+
+  When you use exceptions rather than error codes, then new exceptions are derivatives of
+  the exception class. They can be added without forcing any recompilation or redeployment
+
+
+21. Don't repeat yourself
+  
+  Duplication may be the root of all evil in software.
+  the duplication is a problem because it bloats the code and
+  will require n-fold modification should the algorithm ever have to change. 
+  It is also a four-fold opportunity for an error of omission.
