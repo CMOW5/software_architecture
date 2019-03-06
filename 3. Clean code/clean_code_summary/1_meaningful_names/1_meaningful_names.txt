@@ -1,0 +1,108 @@
+Chapter 2. Meaningful names
+
+
+1. use intention-revealing names.
+
+  It should tell you why it exists, what it does, and how it is used. 
+  If a name requires a comment, then the name does not reveal its intent. 
+
+  int d; // elapsed time in days
+  
+  use int elapsedTimeInDays instead 
+
+  other examples of good variable names = daysSinceCreation, daysSinceModification, fileAgeInDays.
+
+
+2. Avoid missinformation.
+
+  instead of accountList -> List can mean a List Class in Java, if the accountList is not actually a java List, then
+  is missinforming the programmers.
+
+  use accounts or accountGroup instead.
+
+
+3. Make meaningful distinctions
+
+  public static void copyChars(char a1[], char a2[]) {
+    for (int i = 0; i < a1.length; i++) {
+      a2[i] = a1[i];
+    }
+  }
+
+  This function reads much better when source and destination are used for the argument names.
+
+  - avoid noise words
+
+  the variable moneyAmount is indistinguishable from money , customerInfo is indistinguishable from customer , 
+  accountData is indistinguishable from account , and theMessage is indistinguishable from message . 
+  Distinguish names in such a way that the reader knows what the differences offer.
+
+  dont use NameString, CustomerObject.
+  
+  How are the programmers supposed to know which of these functions to call?
+
+  getActiveAccount();
+  getActiveAccounts();
+  getActiveAccountInfo(); 
+
+
+4. Use pronounceable names
+
+  generationTimestamp is better than genymdhms;
+
+
+5. Use searchable names
+
+  MAX_CLASSES_FOR_STUDENT is way better than just hardcoding the number 7.
+
+
+6. Class Names
+
+  Classes and objects should have noun or noun phrase names like Customer , WikiPage , Account , and AddressParser . 
+  Avoid words like Manager , Processor , Data , or Info in the name of a class. A class name should not be a verb.
+
+  
+7. Method Names
+
+  Methods should have verb or verb phrase names like postPayment , deletePage , or save .
+  Accessors, mutators, and predicates should be named for their value and prefixed with get ,
+  set , and is according to the javabean standard.
+
+  When constructors are overloaded, use static factory methods with names that describe the arguments. For example,
+
+    Complex fulcrumPoint = Complex.FromRealNumber(23.0);
+
+  is generally better than
+
+    Complex fulcrumPoint = new Complex(23.0);
+
+  Consider enforcing their use by making the corresponding constructors private.
+
+
+8. Pick One Word per Concept
+
+  Pick one word for one abstract concept and stick with it. For instance, it’s confusing to
+  have fetch , retrieve, and get as equivalent methods of different classes.
+
+
+9. Don't pun
+
+  Avoid using the same word for two purposes. Using the same term for two different ideas
+  is essentially a pun.
+
+
+10. Use Solution Domain names
+
+  Remember that the people who read your code will be programmers. So go ahead and use
+  computer science (CS) terms, algorithm names, pattern names, math terms, and so forth. It
+  is not wise to draw every name from the problem domain because we don’t want our
+  coworkers to have to run back and forth to the customer asking what every name means
+  when they already know the concept by a different name.
+
+
+11. Add meaningfull Context.
+
+  There are a few names which are meaningful in and of themselves—most are not. Instead,
+  you need to place names in context for your reader by enclosing them in well-named
+  classes, functions, or namespaces. When all else fails, then prefixing the name may be nec-
+  essary as a last resort.
