@@ -129,8 +129,8 @@ Chapter 3. Functions
   Dyads aren’t evil, and you will certainly have to write them. However, you should be
   aware that they come at a cost and should take advantage of what mechanims may be
   available to you to convert them into monads. For example, you might make the
-  writeField method a member of outputStream so that you can say outputStream.
-  writeField(name) . Or you might make the outputStream a member variable of the current
+  writeField method a member of outputStream so that you can say outputStream.writeField(name). 
+  Or you might make the outputStream a member variable of the current
   class so that you don’t have to pass it. Or you might extract a new class like FieldWriter
   that takes the outputStream in its constructor and has a write method.
 
