@@ -1,0 +1,21 @@
+Chapter 7. Error Handling.
+
+
+Many code bases are completely dominated by error handling. When I say dominated, 
+I don’t mean that error handling is all that they do. I mean that it is nearly impossible to see what the code does
+because of all of the scattered error handling. Error handling is important, but if it
+obscures logic, it’s wrong.
+
+
+1. Use exceptions rather that return codes.
+  
+  Error codes pullutes the logic, you have to check for errors immediately after a function call.
+  With exceptions The calling code is cleaner. Its logic is not obscured by error handling
+
+2. Write Your Try-Catch-Finally Statement First
+	
+  In a way, try blocks are like transactions. Your catch has to leave your program in a
+  consistent state, no matter what happens in the try . For this reason it is good practice to
+  start with a try - catch - finally statement when you are writing code that could throw
+  exceptions. This helps you define what the user of that code should expect, no matter what
+  goes wrong with the code that is executed in the try .
