@@ -12,10 +12,200 @@ obscures logic, it’s wrong.
   Error codes pullutes the logic, you have to check for errors immediately after a function call.
   With exceptions The calling code is cleaner. Its logic is not obscured by error handling
 
+
+
 2. Write Your Try-Catch-Finally Statement First
 	
   In a way, try blocks are like transactions. Your catch has to leave your program in a
   consistent state, no matter what happens in the try . For this reason it is good practice to
   start with a try - catch - finally statement when you are writing code that could throw
   exceptions. This helps you define what the user of that code should expect, no matter what
-  goes wrong with the code that is executed in the try .
+  goes wrong with the code that is executed in the try.
+
+
+
+3. Use unchecked exceptions
+
+  
+  The price of checked exceptions is an Open/Closed Principle violation.
+  If you throw a checked exception from a method in your code and the catch is three levels
+  above, you must declare that exception in the signature of each method between you and
+  the catch. This means that a change at a low level of the software can force signature
+  changes on many higher levels. The changed modules must be rebuilt and redeployed,
+  even though nothing they care about changed.
+
+  let’s say one of the lowest level functions is modified in such a way that it must throw an exception. 
+  If that exception is checked, then the function signature must add a throws clause. But this
+  means that every function that calls our modified function must also be modified either to
+  catch the new exception or to append the appropriate throws clause to its signature.
+  Encapsulation is broken because all functions in the path of a throw must know about details of 
+  that low-level exception.
+
+  Checked exceptions can sometimes be useful if you are writing a critical library: You
+  must catch them. But in general application development the dependency costs outweigh
+  the benefits.
+
+
+
+4. Provide Context with exceptions
+
+
+  Each exception that you throw should provide enough context to determine the source and
+  location of an error. Create informative error messages and pass them along with your exceptions. 
+  Mention the operation that failed and the type of failure.
+
+
+5. Define exceptions classes in terms of a caller's needs
+
+
+  There are many ways to classify errors. We can classify them by their source: Did they
+  come from one component or another? Or their type: Are they device failures, network
+  failures, or programming errors? However, when we define exception classes in an appli-
+  cation, our most important concern should be how they are caught. 
+
+  
+  example => poor exception classification
+
+    ACMEPort port = new ACMEPort(12);
+
+    try {
+      port.open();
+    } catch (DeviceResponseException e) {
+      reportPortError(e);
+      logger.log("Device response exception", e);
+    } catch (ATM1212UnlockedException e) {
+      reportPortError(e);
+      logger.log("Unlock exception", e);
+    } catch (GMXError e) {
+      reportPortError(e);
+      logger.log("Device response exception");
+    } ....
+
+  That statement contains a lot of duplication.
+
+
+  we can simplify our code considerably by wrapping the API that we are calling and making sure that it returns 
+  a common exception type:
+
+  LocalPort port = new LocalPort(12);
+
+  try {
+    port.open();
+  } catch (PortDeviceFailure e) {
+    reportError(e);
+    logger.log(e.getMessage(), e);
+  } finally {
+  ...
+  }
+
+
+  Our LocalPort class is just a simple wrapper that catches and translates exceptions thrown 
+  by the ACMEPort class:
+
+  public class LocalPort {
+    private ACMEPort innerPort;
+
+    public LocalPort(int portNumber) {
+    innerPort = new ACMEPort(portNumber);
+    }
+
+    public void open() {
+      try {
+        innerPort.open();
+      } catch (DeviceResponseException e) {
+        throw new PortDeviceFailure(e);
+      } catch (ATM1212UnlockedException e) {
+        throw new PortDeviceFailure(e);
+      } catch (GMXError e) {
+        throw new PortDeviceFailure(e);
+      }
+    }
+      ...
+  }
+
+
+  wrapping third-party APIs is a best practice. You can choose to move to a different library 
+  in the future without much penalty. Wrapping also makes it easier to mock out third-party calls when you are
+  testing your own code.
+
+
+6. Define normal flow
+
+  If you follow the advice in the preceding sections, you’ll end up with a good amount of separation between your 
+  business logic and your error handling. However, the process of doing this pushes error detection to the edges 
+  of your program.
+
+  Here is some awkward code that sums expenses in a billing application
+
+    try {
+      MealExpenses expenses = expenseReportDAO.getMeals(employee.getID());
+      m_total += expenses.getTotal();
+    } catch(MealExpensesNotFound e) {
+      m_total += getMealPerDiem();
+    }
+
+
+  The exception clutters the logic. Wouldn’t it be better if we didn’t have to deal with the special case? 
+  If we didn’t, our code would look much simpler. It would look like this:
+  
+    MealExpenses expenses = expenseReportDAO.getMeals(employee.getID());
+    m_total += expenses.getTotal();
+
+
+  We can change the ExpenseReportDAO so that it always returns a MealExpense object. 
+  If there are no meal expenses, it returns a MealExpense object that returns the per diem as its total:
+
+    public class PerDiemMealExpenses implements MealExpenses {
+      public int getTotal() {
+        // return the per diem default
+      }
+    }
+
+  This is called the SPECIAL CASE P ATTERN [Fowler]. You create a class or configure an
+  object so that it handles a special case for you. When you do, the client code doesn’t have
+  to deal with exceptional behavior. That behavior is encapsulated in the special case object.
+
+
+7. Don't return null
+
+
+  I can’t begin to count the number of applications I’ve seen in which nearly every other line was a check for null. 
+  Here is some example code:
+
+    public void registerItem(Item item) {
+      if (item != null) {
+        ItemRegistry registry = peristentStore.getItemRegistry();
+        if (registry != null) {
+          Item existing = registry.getItem(item.getID());
+          if (existing.getBillingPeriod().hasRetailOwner()) {
+            existing.register(item);
+          }
+        }
+      }
+    }
+
+  When we return null , we are essentially creating work for ourselves and foisting problems upon our callers. 
+  All it takes is one missing null check to send an application spinning out of control.
+
+  What would have happened at runtime if persistentStore were null ? Wewould have had a NullPointerException 
+  at runtime.
+
+  It’s easy to say that the problem with the code above is that it is missing a null check,
+  but in actuality, the problem is that it has too many. If you are tempted to return null from
+  a method, consider throwing an exception or returning a S PECIAL C ASE object instead.
+
+  If you are calling a null -returning method from a third-party API, consider wrapping that
+  method with a method that either throws an exception or returns a special case object.
+
+  
+8. Don't pass null
+
+
+  Returning null from methods is bad, but passing null into methods is worse. Unless you
+  are working with an API which expects you to pass null , you should avoid passing null in
+  your code whenever possible. 
+
+  In most programming languages there is no good way to deal with a null that is
+  passed by a caller accidentally. Because this is the case, the rational approach is to forbid
+  passing null by default. When you do, you can code with the knowledge that a null in an
+  argument list is an indication of a problem, and end up with far fewer careless mistakes.
