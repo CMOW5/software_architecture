@@ -1,0 +1,127 @@
+Chapter 8. Boundaries.
+
+
+Sometimes we buy third-party packages or use open source. Somehow we must cleanly 
+integrate this foreign code with our own. In this chapter we look at practices and 
+techniques to keep the boundaries of our software clean.
+
+1. Using Third-Party Code
+
+	Providers of third-party packages and frameworks strive for broad applicability so they
+  can work in many environments and appeal to a wide audience. Users, on the other hand,
+  want an interface that is focused on their particular needs. This tension can cause problems
+  at the boundaries of our systems.
+
+  example =>
+
+    Map sensors = new HashMap();
+    Sensor s = (Sensor)sensors.get(sensorId); // you see this over and over again throughout the code
+
+
+  he client of this code carries the responsibility of getting an Object from the Map and casting 
+  it to the right type. This works, but it’s not clean code.
+
+    Map<Sensor> sensors = new HashMap();
+    Sensor s = sensors.get(sensorId); 
+
+  However, this doesn’t solve the problem that Map<Sensor> provides more capability than we
+  need or want.
+
+  Passing an instance of Map<Sensor> liberally around the system means that there will be a lot of places 
+  to fix if the interface to Map ever changes.
+
+  No user of Sensors would care one bit if generics were used or not. 
+  That choice has become (and always should be) an implementation detail.
+
+
+  public class Sensors {
+    private Map sensors = new HashMap();
+    
+    public Sensor getById(String id) {
+      return (Sensor) sensors.get(id);
+    }
+    //snip
+  }
+
+
+  The interface at the boundary ( Map ) is hidden. It is able to evolve with very little impact on
+  the rest of the application.
+
+  This interface is also tailored and constrained to meet the needs of the application. It
+  results in code that is easier to understand and harder to misuse. The Sensors class can
+  enforce design and business rules.
+
+  We are not suggesting that every use of Map be encapsulated in this form. Rather, we
+  are advising you not to pass Maps (or any other interface at a boundary) around your
+  system. If you use a boundary interface like Map , keep it inside the class, or close family
+  of classes, where it is used. Avoid returning it from, or accepting it as an argument to,
+  public APIs.
+
+
+
+2. Exploring and learning boundaries
+
+
+  It’s not our job to test the third-party code, but it may be in our best interest to write tests for the 
+  third-party code we use.
+
+  Learning the third-party code is hard. Integrating the third-party code is hard too.
+  Doing both at the same time is doubly hard.
+
+  Instead of experimenting and trying out the new stuff in our production code, we could write some
+  tests to explore our understanding of the third-party code. (learning tests).
+
+  In learning tests we call the third-party API, as we expect to use it in our application.
+  We’re essentially doing controlled experiments that check our understanding of that API.
+  The tests focus on what we want out of the API.
+
+  that way we can encapsulate that knowledge into our own class so that the rest of our application 
+  is isolated from the API boundary interface.
+
+  Not only are learning tests free, they have a positive return on investment. When there
+  are new releases of the third-party package, we run the learning tests to see whether there
+  are behavioral differences.
+
+  Learning tests verify that the third-party packages we are using work the way we expect them to. 
+  Once integrated, there are no guarantees that the third-party code will stay compatible with our needs
+
+  a clean boundary should be supported by a set of outbound tests that exercise the interface the same way the
+  production code does. Without these boundary tests to ease the migration, we might be
+  tempted to stay with the old version longer than we should.
+
+
+
+3. Using code that does not yet exists
+
+
+  There are often places in the code where our knowledge seems to drop off the edge. Sometimes
+  what is on the other side of the boundary is unknowable (at least right now). Sometimes
+  we choose to look no farther than the boundary.
+
+  for example lets say that we have to develop an app and we depend of a system called Transmitter that
+  is not yet completed. 
+
+  To keep from being blocked, we defined our own interface. We called it something
+  catchy, like Transmitter. We gave it a method called transmit that took a frequency and a
+  data stream. This was the interface we wished we had.
+
+  This also helps keep client code more readable and focused on what it is trying to accomplish.
+
+  Once the transmitter API was defined, we wrote the TransmitterAdapter to
+  bridge the gap.
+
+
+
+4. Clean boundaries
+
+
+  Interesting things happen at boundaries. Change is one of those things. Good software
+  designs accommodate change without huge investments and rework. When we use code
+  that is out of our control, special care must be taken to protect our investment and make
+  sure future change is not too costly.
+
+  Code at the boundaries needs clear separation and tests that define expectations.
+
+  We manage third-party boundaries by having very few places in the code that refer to
+  them. We may wrap them as we did with Map , or we may use an A DAPTER to convert from
+  our perfect interface to the provided interface.
