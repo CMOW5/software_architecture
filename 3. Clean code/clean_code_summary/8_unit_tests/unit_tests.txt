@@ -1,0 +1,135 @@
+Chapter 9. Unit Tests.
+
+The Agile and TDD movements have encouraged many programmers to write automated unit tests, and more are
+joining their ranks every day. But in the mad rush to add testing to our discipline, many
+programmers have missed some of the more subtle, and important, points of writing
+good tests.
+
+1. The three laws of TDD
+
+	- First Law: You may not write production code until you have written a failing unit test.
+
+  - Second Law: You may not write more of a unit test than is sufficient to fail, and not compiling is failing.
+
+  - Third Law: You may not write more production code than is sufficient to pass the currently failing test.
+
+  those tests, which can rival the size of the production code itself, can present a daunting management problem.
+
+
+2. Keeping Tests Clean
+
+  having dirty tests is equivalent to, if not worse than, having no tests. 
+  The problem is that tests must change as the production code  evolves. 
+  The dirtier the tests, the harder they are to change. The more tangled the test code,
+  the more likely it is that you will spend more time cramming new tests into the suite than it
+  takes to write the new production code. As you modify the production code, old tests start
+  to fail, and the mess in the test code makes it hard to get those tests to pass again. So the
+  tests become viewed as an ever-increasing liability.
+
+  Test code is just as important as production code. It is not a second-class citizen. 
+  It requires thought, design, and care. It must be kept as clean as production code.
+
+  If you don’t keep your tests clean, you will lose them. And without them, you lose the very
+  thing that keeps your production code flexible. Yes, you read that correctly. It is unit tests
+  that keep our code flexible, maintainable, and reusable.
+
+  Without tests every change is a possible bug. No matter how flexible your architecture is, 
+  no matter how nicely partitioned your design, without tests you will be reluctant to make changes 
+  because of the fear that you will introduce undetected bugs.
+
+ 
+3. Clean Tests
+
+  What makes a clean test? Three things. Readability, readability, and readability.
+
+  What makes tests readable? The same thing that makes all code readable: clarity, simplicity,
+  and density of expression. In a test you want to say a lot with as few expressions as
+  possible.
+
+  Each of the tests should be split into three parts. The first part builds up the test data, the
+  second part operates on that test data, and the third part checks that the operation yielded
+  the expected results.
+
+  The annoying details should been eliminated. 
+  The tests get right to the point and use only the data types and functions that they truly need. 
+  Anyone who reads these tests should be able to work out what they do very quickly, without being
+  misled or overwhelmed by details.
+
+
+4. Domain Specific Testing Language
+
+
+  Rather than using the APIs that programmers use to manipulate the system, we build up a set of functions 
+  and utilities that make use of those APIs and that make the tests more convenient to write and easier to read. 
+  These functions and utilities become a specialized API used by the tests. They are a testing language that program-
+  mers use to help themselves to write their tests and to help those who must read those tests later on.
+
+  This testing API is not designed up front; rather it evolves from the continued refactoring of test code 
+  that has gotten too tainted by obfuscating detail. Disciplined developers refactor their test
+  code into more succinct and expressive forms.
+
+
+5. A dual Standard
+
+  The code within the testing API does have a different set of engineering standards than production code. 
+  It must still be simple, succinct, and expressive, but it need not be as efficient as production code.
+
+  There are things that you might never do in a production environment that are perfectly fine in a test environment. 
+  Usually they involve issues of memory or CPU efficiency. But they never involve issues of cleanliness.
+
+
+6. One Assert Per Test
+
+  This rule may seem draconian, but the advantage is that Those tests come to a single conclusion 
+  that is quick and easy to understand.
+
+  however this may lead to too much mechanism for such a minor issue.
+
+  You should not be afraid to put more than one assert in a test. 
+  I think the best thing we can say is that the number of asserts in a test ought to be minimized.
+
+
+7. Single concept per Test
+
+  We don’t want long test functions that go testing one miscellaneous thing after another.
+
+  So probably the best rule is that you should minimize the number of asserts per concept and test just one con-
+  cept per test function.
+
+
+8. F.I.R.S.T
+
+  Clean tests follow five other rules that form the above acronym:
+
+  - Fast: 
+
+    Tests should be fast. They should run quickly. When tests run slow, you won’t want
+    to run them frequently. If you don’t run them frequently, you won’t find problems early
+    enough to fix them easily. You won’t feel as free to clean up the code. Eventually the code
+    will begin to rot. 
+
+  - Independent:
+
+    Tests should not depend on each other. One test should not set up the conditions for the next test. 
+    You should be able to run each test independently and run the tests in any order you like.
+    When tests depend on each other, then the first one to fail causes a cascade of downstream failures.
+
+  - Repeatable:
+
+    Tests should be repeatable in any environment. You should be able to run the tests in the production environment, 
+    in the QA environment, and on your laptop while riding home on the train without a network.
+
+  - Self-Validating:
+
+    The tests should have a boolean output. Either they pass or fail. You should not have to read through a log file 
+    to tell whether the tests pass. If the tests aren’t self-validating, then failure can become subjective and running 
+    the tests can require a long manual evaluation.
+
+  - Timely:
+
+    The tests need to be written in a timely fashion. Unit tests should be written just
+    before the production code that makes them pass. If you write tests after the production
+    code, then you may find the production code to be hard to test. You may decide that some
+    production code is too hard to test. You may not design the production code to be testable.
+
+
