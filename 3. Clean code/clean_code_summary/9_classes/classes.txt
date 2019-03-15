@@ -1,0 +1,182 @@
+Chapter 10. Classes.
+
+1. Class organization 
+
+	Following the standard Java convention, a class should begin with a list of variables. 
+  Public static constants, if any, should come first. Then private static variables, 
+  followed by private instance variables. There is seldom a good reason to have a public variable.
+
+  We like to put the private utilities called by a public function right after the public function itself. 
+  This follows the stepdown rule and helps the program read like a newspaper article.
+
+
+2. Clasess should be small
+
+  Aas with functions, smaller is the primary rule when it comes to designing classes. 
+  As with functions, our immediate question is always “How small?”
+
+  With functions we measured size by counting physical lines. With classes we use a
+  different measure. We count responsibilities.
+
+  The name of a class should describe what responsibilities it fulfills. 
+  In fact, naming is probably the first way of helping determine class size
+  If we cannot derive a concise name for a class, then it’s likely too large
+
+  The more ambiguous the class name, the more likely it has too many responsibilities. 
+  For example, class names including weasel words like Processor or Manager or Super often 
+  hint at unfortunate aggregation of responsibilities.
+
+  We should also be able to write a brief description of the class in about 25 words,
+  without using the words “if,” “and,” “or,” or “but.”
+
+  example =>
+
+    The SuperDashboard provides access to the component that last held the
+    focus, and it also allows us to track the version and build numbers.
+
+    (The first “and” is a hint that SuperDashboard has too many responsibilities)
+
+
+3. The single responsibility principle (SRP)
+
+  states that a class or module should have one, and only one, reason to change.
+  Classes should have one responsibility—one reason to change.
+
+  Trying to identify responsibilities (reasons to change) often helps us recognize and
+  create better abstractions in our code
+
+  example => 
+
+    public class SuperDashboard extends JFrame implements MetaDataUser
+      public Component getLastFocusedComponent()
+      public void setLastFocused(Component lastFocused)
+      public int getMajorVersionNumber()
+      public int getMinorVersionNumber()
+      public int getBuildNumber()
+    }
+
+    Trying to identify responsibilities (reasons to change) often helps us recognize and
+    create better abstractions in our code. We can easily extract all three SuperDashboard
+    methods that deal with version information into a separate class named Version.
+
+    public class Version {
+      public int getMajorVersionNumber()
+      public int getMinorVersionNumber()
+      public int getBuildNumber()
+    }
+
+  many developers fear that a large number of small, single-purpose classes makes it more difficult 
+  to understand the bigger picture.
+
+  Every sizable system will contain a large amount of logic and complexity. The primary goal in managing 
+  such complexity is to organize it so that a developer knows where to look to find things and need only 
+  understand the directly affected complexity at any given time.
+
+  To restate the former points for emphasis: We want our systems to be composed of
+  many small classes, not a few large ones. Each small class encapsulates a single responsi-
+  bility, has a single reason to change, and collaborates with a few others to achieve the
+  desired system behaviors.
+
+
+4. Cohesion
+
+  Classes should have a small number of instance variables. Each of the methods of a class
+  should manipulate one or more of those variables. In general the more variables a method
+  manipulates the more cohesive that method is to its class. A class in which each variable is
+  used by each method is maximally cohesive.
+
+  In general it is neither advisable nor possible to create such maximally cohesive
+  classes; on the other hand, we would like cohesion to be high.
+
+  When cohesion is high, it means that the methods and variables of the class are co-dependent 
+  and hang together as a logical whole.
+
+  
+5. Maintaining Cohesion results in many small classes
+
+  You should try to separate the variables and methods into two or more classes such that 
+  the new classes are more cohesive.
+
+  Just the act of breaking large functions into smaller functions causes a proliferation of
+  classes. Consider a large function with many variables declared within it. Let’s say you
+  want to extract one small part of that function into a separate function. However, the code
+  you want to extract uses four of the variables declared in the function. Must you pass all
+  four of those variables into the new function as arguments?  
+
+  Not at all! If we promoted those four variables to instance variables of the class, then
+  we could extract the code without passing any variables at all. It would be easy to break
+  the function up into small pieces.
+
+  Unfortunately, this also means that our classes lose cohesion because they accumulate
+  more and more instance variables that exist solely to allow a few functions to share them.
+
+  But wait! If there are a few functions that want to share certain variables, doesn’t that
+  make them a class in their own right? Of course it does. When classes lose cohesion, split
+  them!
+
+  So breaking a large function into many smaller functions often gives us the opportu-
+  nity to split several smaller classes out as well.
+
+
+6. Organizing for change
+
+  For most systems, change is continual. Every change subjects us to the risk that the
+  remainder of the system no longer works as intended. In a clean system we organize our
+  classes so as to reduce the risk of change.
+
+  Private method behavior that applies only to a small subset of a class can be a useful
+  heuristic for spotting potential areas for improvement. However, the primary spur for tak-
+  ing action should be system change itself.
+
+  The risk that one function could break another becomes vanishingly small when you break the
+  code in smaller classes. From a test standpoint, it becomes an easier
+  task to prove all bits of logic in this solution, as the classes are all isolated from one
+  another.
+
+  We want to structure our systems so that we muck with as little as possible when we
+  update them with new or changed features. In an ideal system, we incorporate new fea-
+  tures by extending the system, not by making modifications to existing code.
+  
+  Open-Closed Principle (Classes should be open for extension but closed for modification)
+
+7. Isolating from change 
+
+  concrete classes contains implementation details (code), and abstract classes
+  represents concepts only.
+
+  A client class depending upon concrete details is at risk when those details change. 
+  We can introduce interfaces and abstract classes to help isolate the impact of those details.
+
+  Dependencies upon concrete details also create challenges for testing our system.
+
+  building a Portfolio class and it depends upon an external TokyoStockExchange API to
+  derive the portfolio’s value, our test cases are impacted by the volatility of such a lookup.
+  It’s hard to write a test when we get a different answer every five minutes!
+
+  instead we can create an interface:
+
+    public interface StockExchange {
+      Money currentPrice(String symbol);
+    }
+
+  then 
+
+    public Portfolio {
+      private StockExchange exchange;
+      public Portfolio(StockExchange exchange) {
+        this.exchange = exchange;
+      }
+      // ...
+    }
+
+  Now our test can create a testable implementation of the StockExchange interface that
+  emulates the TokyoStockExchange.
+
+  If a system is decoupled enough to be tested in this way, it will also be more flexible
+  and promote more reuse. The lack of coupling means that the elements of our system are
+  better isolated from each other and from change. This isolation makes it easier to under-
+  stand each element of the system.
+
+  Dependency Inversion Principle (DIP). (classes should depend upon abstractions, not on concrete details).
+
+  
