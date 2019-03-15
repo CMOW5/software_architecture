@@ -187,12 +187,12 @@ obscures logic, it’s wrong.
   When we return null , we are essentially creating work for ourselves and foisting problems upon our callers. 
   All it takes is one missing null check to send an application spinning out of control.
 
-  What would have happened at runtime if persistentStore were null ? Wewould have had a NullPointerException 
+  What would have happened at runtime if persistentStore were null? We would have had a NullPointerException 
   at runtime.
 
   It’s easy to say that the problem with the code above is that it is missing a null check,
   but in actuality, the problem is that it has too many. If you are tempted to return null from
-  a method, consider throwing an exception or returning a S PECIAL C ASE object instead.
+  a method, consider throwing an exception or returning a SPECIAL CASE object instead.
 
   If you are calling a null -returning method from a third-party API, consider wrapping that
   method with a method that either throws an exception or returns a special case object.

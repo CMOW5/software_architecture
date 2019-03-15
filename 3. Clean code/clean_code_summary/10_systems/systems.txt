@@ -1,0 +1,153 @@
+Chapter 11. Systems
+
+
+1. Separate Constructing a System from Using it.
+
+  Software systems should separate the startup process, when the application objects are
+  constructed and the dependencies are “wired” together, from the runtime logic that takes
+  over after startup.
+
+	We should modularize this process separately from the normal runtime logic and we should
+  make sure that we have a global, consistent strategy for resolving our major dependencies.
+
+
+
+2. Separation of main
+
+  
+  One way to separate construction from use is simply to move all aspects of construction to
+  main , or modules called by main , and to design the rest of the system assuming that all
+  objects have been constructed and wired up appropriately.
+
+  The main function builds the objects necessary for the system, then passes them to the application, 
+  which simply uses them. Notice the direction of the dependency arrows crossing the barrier between 
+  main and the application. They all go one direction, pointing away from main. 
+  This means that the application has no knowledge of main or of the construction process. 
+  It simply expects that everything has been built properly.
+
+
+
+3. Factories
+
+  Sometimes, of course, we need to make the application responsible for when an object gets
+  created. we can use the ABSTRACT FACTORY pattern to give the application control of when 
+  to build some objects, but keep the details of that construction separate from the application code
+
+  This means that the application is decoupled from the details of how to build those objects.
+
+
+
+4. Dependency Injection (Inversion of control)
+  
+  Inversion of Control moves secondary responsibilities from an object to other objects that are dedicated
+  to the purpose, thereby supporting the Single Responsibility Principle.
+
+  In the context of dependency management, an object should not take responsibility for instantiating 
+  dependencies itself. Instead, it should pass this responsibility to another “authoritative” mecha-
+  nism, thereby inverting the control. Because setup is a global concern, this authoritative
+  mechanism will usually be either the “main” routine or a special-purpose container.
+
+  During the construction process, the DI container instantiates the required objects (usually on demand)
+  and uses the constructor arguments or setter methods provided to wire together the depen-
+  dencies. Which dependent objects are actually used is specified through a configuration
+  file or programmatically in a special-purpose construction module.
+
+  
+5. Scaling Up
+
+  It is a myth that we can get systems “right the first time.” Instead, we should implement only today’s stories, 
+  then refactor and expand the system to implement new stories tomorrow.
+  This is the essence of iterative and incremental agility. Test-driven development, refactoring, 
+  and the clean code they produce make this work at the code level.
+
+  Software systems are unique compared to physical systems. Their architectures can grow
+  incrementally, if we maintain the proper separation of concerns.
+
+ 
+6. Test Drive The System Architecture
+
+  t is not necessary to do a Big Design Up Front (BDUF -> BDUF is the practice of designing everything up front before
+  implementing anything at all). 
+
+  In fact, BDUF is even harmful because it inhibits adapting to change, due to the psychological 
+  resistance to discarding prior effort and because of the way architecture choices influence subsequent
+  thinking about the design.
+
+  Building architects have to do BDUF because it is not feasible to make radical archi-
+  tectural changes to a large physical structure once construction is well underway. 19
+  Although software has its own physics, 20 it is economically feasible to make radical
+  change, if the structure of the software separates its concerns effectively.
+
+  This means we can start a software project with a “naively simple” but nicely decou-
+  pled architecture, delivering working user stories quickly, then adding more infrastructure
+  as we scale up. Some of the world’s largest Web sites have achieved very high availability
+  and performance, using sophisticated data caching, security, virtualization, and so forth,
+  all done efficiently and flexibly because the minimally coupled designs are appropriately
+  simple at each level of abstraction and scope.  
+
+  Of course, this does not mean that we go into a project “rudderless.” We have some
+  expectations of the general scope, goals, and schedule for the project, as well as the gen-
+  eral structure of the resulting system. However, we must maintain the ability to change
+  course in response to evolving circumstances.
+
+  Even well-designed APIs can be overkill when they aren’t really needed. 
+  A good API should largely disappear from view most of the time, so the team expends 
+  the majority of its creative efforts focused on the user stories being implemented
+
+  An optimal system architecture consists of modularized domains of concern, each of which
+  is implemented with Plain Old Java (or other) Objects. The different domains are inte-
+  grated together with minimally invasive Aspects or Aspect-like tools. This architecture can
+  be test-driven, just like the code.
+
+
+
+7. Optimize Decision making
+
+
+  Modularity and separation of concerns make decentralized management and decision
+  making possible  
+
+  We all know it is best to give responsibilities to the most qualified persons. We often
+  forget that it is also best to postpone decisions until the last possible moment. This isn’t
+  lazy or irresponsible; it lets us make informed choices with the best possible information.
+  A premature decision is a decision made with suboptimal knowledge. We will have that
+  much less customer feedback, mental reflection on the project, and experience with our
+  implementation choices if we decide too soon.
+
+
+8. Use standards wisely, When They Add Demonstrable Value.
+
+  I have seen teams become obsessed with various strongly hyped standards and lose focus on 
+  implementing value for their customers.
+
+  Standards make it easier to reuse ideas and components, recruit people with relevant expe-
+  rience, encapsulate good ideas, and wire components together. However, the process of
+  creating standards can sometimes take too long for industry to wait, and some standards
+  lose touch with the real needs of the adopters they are intended to serve.
+
+  
+
+9. Systems Need Domain-Specific Languages
+
+  In soft-
+  ware, there has been renewed interest recently in creating Domain-Specific Languages
+  (DSLs), which are separate, small scripting languages or APIs in standard languages that
+  permit code to be written so that it reads like a structured form of prose that a domain
+  expert might write.
+
+  DSLs, when used effectively, raise the abstraction level above code idioms and design
+  patterns. They allow the developer to reveal the intent of the code at the appropriate level
+  of abstraction.
+
+
+Conclusion
+
+  Systems must be clean too. An invasive architecture overwhelms the domain logic and
+  impacts agility. When the domain logic is obscured, quality suffers because bugs find it
+  easier to hide and stories become harder to implement. If agility is compromised, produc-
+  tivity suffers and the benefits of TDD are lost.
+
+  At all levels of abstraction, the intent should be clear.
+
+  Whether you are designing systems or individual modules, never forget to use the
+  simplest thing that can possibly work.
