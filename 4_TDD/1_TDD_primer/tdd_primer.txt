@@ -1,0 +1,213 @@
+
+Problem
+
+  1. Creating poor written code
+
+    - Riddled with defects
+    - Nightmare to maintain, slow to develop
+
+
+  2. Failing to meet actual needs
+
+
+Solution: Being test driven
+
+  TDD is a technique for improving the software’s
+  internal quality, whereas acceptance TDD helps
+  us keep our product’s external quality on track
+  by giving it the correct features and functionality.
+
+                           ///////////////////////////
+  external quality ->     /  internal quality (TDD) /       
+  acceptance TDD         /   <-                    /  
+                        ///////////////////////////    
+
+
+TDD is a way of programming that encourages good design and is a disciplined
+process that helps us avoid programming errors. TDD does so by making us write
+small, automated tests, which eventually build up a very effective alarm system for
+protecting our code from regression
+
+TDD says we should write the test first and only then write code to reach that clear goal.
+Design is what we do last. We look at the code we have and find the simplest
+design possible.
+
+The way TDD can help in this regard is by letting us focus on
+the public interfaces for our modules, classes, and what have you. By not knowing
+what the implementation looks like, we are better positioned to think out of the
+box and focus on how the code should behave and how the developer of the cli-
+ent code would—or could—use it, either on purpose or by mistake.
+
+- Less time spent fixing defects
+
+  TDD helps us speed up by reducing the time it takes to fix defects
+  The fact that we are delivering the required functionality faster means that we
+  have more time available for cleaning up our code base, getting up to speed on
+  the latest developments in tools and technologies, catching up with our cowork-
+  ers, and so forth
+
+
+- Acceptance TDD
+
+  The traditional way of adding features into a system is to first write a requirements docu-
+  ment of some kind, proceed with implementation, have the development team test
+  the feature, and then have the customer acceptance-test the feature. Acceptance
+  TDD differs from this method by moving the testing function before the implemen-
+  tation. In other words, we translate a requirement into a set
+  of executable tests and then do the implementation against the tests rather than
+  against the developer’s interpretation of a verbal requirement.
+
+  Acceptance TDD provides the missing ingredient to delivering a good product
+  by bri(dging the gap between the programmer and the customer
+
+  Requirement                  /- feedBack     
+              \               /            ^    
+               v             v              \  
+               Acceptance tests -> implementation
+
+  via executable tests—we are effectively ensuring that we’re delivering what the customer needs
+
+  With acceptance TDD, we’re just talking about tests for the behavior of a system rather than tests for
+  the behavior of objects. This difference also means that we need to speak a lan-
+  guage that both the programmer and the customer understand.
+
+
+  - TDD cycle
+
+    write the Test -> Code -> Refactor (transform the current design)
+
+    1. Write the Test:
+
+      we’re really doing more than just writing a test. We’re making design decisions. 
+      We’re designing the API the interface for accessing the functionality we’re testing. 
+      By writing the test before the code it’s testing, we are forcing ourselves to think 
+      hard about how we want the code to be used.
+
+      One of the fundamental lessons in designing an interface
+      is that we only evaluate a design effectively and objectively when we try to use it. By
+      writing the test first, we are ensuring that we will not miss that feedback.
+
+      One way tests drive the design in TDD is that they tell you exactly what your
+      software needs to be able to do now. Not tomorrow, not yesterday—now. Proceed-
+      ing in these small steps, implementing just enough functionality to get that next
+      test passing, we are in control of our software and its design.
+
+
+    2. Then we write just enough code
+
+      write just enough code to make the test pass. Why just enough code? The test we’ve written 
+      is a test that’s failing. It’s pointing out a gap between what the code does and what we expect 
+      it to do. It’s a small gap, which we should be able to close in a few minutes, 
+      which, in turn, means that the code is never broken for long.
+
+      It’s worth noting that when we write just enough code, our main goal is to make
+      the test pass as quickly as possible. That often means an implementation that’s not
+      optimal. And that’s OK . We’ll take care of all that after we have the desired behav-
+      ior in place—and tests to prove it.
+
+    3. Refactor (Improving the design)
+
+      is when we take a step back, look at our design, and figure out ways of making it better. 
+      The refactoring step is what makes TDD sustainable.
+
+      In addition to not introducing defects with our changes to the code’s internal
+      structure, we also don’t want our refactorings to add functionality. That is, refac-
+      torings should preserve behavior.
+
+      whatever transformations you apply to the existing code, those transformations should only
+      affect the code’s design and structure—not its externally visible behavior or functionality.
+
+    
+
+
+- Develop in small increments
+
+  (small enough to fit in put heads, evolutionary design, discipline required)
+
+  Instead of designing as much as we possibly can up front, we design as much as we deem necessary 
+  in order to make progress. Instead of thoroughly analyzing all the possible scenarios imagin-
+  able before finalizing the design, we opt for making our design decisions based on
+  knowledge—not assumptions—acquired during implementation.
+
+  The key is to keep an eye on whether you’re going in the right direction. 
+  Big part of your design didn’t work out? Cut back on up-front design. 
+  Ended up with a design that doesn’t scale enough? Turn the up-front design lever up a notch.
+
+  The point here is to make a trade-off between avoiding unnecessary work on
+  something that we don’t need and avoiding taking shortcuts now that will come
+  back to bite us.
+
+  We don’t predict design problems beforehand and prepare for them—that would
+  increase the possibility of creating more problems with our system’s design than
+  solving them.
+
+
+- Regression
+
+  Regression in general is about moving back to a less developed state. In the case
+  of software, regression is existing, once-working functionality getting broken.
+  That is, it regresses from a working state to a non-working state.
+
+  regression testing and is about executing tests repeatedly throughout the project to 
+  verify that defects that once existed are not reappearing undetected as the software 
+  evolves through thousands and thousands of changes.
+
+  the tests must be easy to run—otherwise we’ll be tempted to
+  skip the tests and check our changes in, hoping that they won’t break anything.
+  Another essential property is that the tests run fast—otherwise we’ll be tempted to
+  run the tests less frequently, again skipping an important verification step.
+
+  If we run our test suite after every tiny change, we’ll know exactly which couple of 
+  lines caused the tests to fail.
+
+
+- Continuous integration
+
+  Sometimes, though, it is not possible to run all tests fast enough (db connections, filesystem access, 
+  web server, etc). 
+
+  In these situations, it often makes sense to run a subset of the tests (a subset
+  that’s most likely to catch any bugs introduced by the change), check in, and leave
+  a build server crunching through the rest of the tests in the background while we
+  move on with our next task. These build servers are sometimes referred to as con-
+  tinuous integration servers
+
+
+- Build the right thing: Acceptance TDD
+
+  the role of tests themselves has morphed into other areas of soft-
+  ware development than plain verification of conformance to specification. In fact,
+  the solution to the second half of our problem of code that fails to meet actual
+  needs is to let tests drive our development on the level of features and functional-
+  ity of the system we’re building. That is what practicing acceptance test-driven
+  development is about.
+
+  we only ever start test-driving a feature into the system when there is a test calling for it.
+
+  In essence, this means that tests are no longer merely a verification tool, but
+  also an integral part of requirements and specification as well as a medium for
+  customer collaboration.
+
+  acceptance tests are indicators of the completion of a requirement or feature. 
+  When all acceptance tests for a requirement or feature are passing, you know you’re done.
+
+  - Close collaboration
+
+    we want to have an integrated project team instead of separate development, business
+    analysis, and testing teams, let alone a distant QA department.
+
+    The fundamental idea is that the way to achieve the best possible level of pro-
+    ductivity for the whole team is to nurture rapid feedback and effective, face-to-face
+    communication around concrete, working software instead of passing around test
+    plans, requirements specifications, and bug reports between customers, testers,
+    business analysts, and developers.
+
+    With incremental development, the customer gets to choose which features they get first. 
+    Similarly, they also get to choose which features are dropped if the team is not able to implement 
+    all of them within the project’s allocated time or budget.
+
+  Whereas acceptance tests specify by example the desired behavior of the system, 
+  the examples and the desired behavior specified with unit tests are specifications about the desired 
+  implementation rather than about the functionality delivered.
+
+  
