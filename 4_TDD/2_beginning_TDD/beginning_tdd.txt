@@ -1,0 +1,161 @@
+
+1. From requirements to tests
+
+  - Decomposing requirements
+
+    With any requirements you may have envisioned for the subsystem, you’ve proba-
+    bly already sliced and diced them into some kind of a set of “things we need to
+    do”—let’s call them tasks—that will, when completed, lead to satisfying the origi-
+    nal requirement. Now erase those tasks out of your head and do it all again, this
+    time slicing the requirements into a set of tests that, when passing, lead to the
+    requirements being satisfied.
+
+    Decomposing into tasks leads to items that do not represent progress in terms of 
+    produced software. Contrast the tests, which have a clear connection to capabilities 
+    of the produced software.
+
+    example =>
+
+      - task: Write a regular expression for identifying variables from the template.
+      - test: Template without any variables renders as is.
+
+      - task: Implement a template parser that uses the regular expression.
+      - test: Template with one variable is rendered with the variable replaced with 
+              its value.
+
+      - task: Implement a template engine that provides a public API and uses the 
+              template parser internally.
+      - test: Template with multiple variables is rendered with the appropriate 
+              placeholders replaced by the associated values.
+
+    Translating requirements into tests is far superior to merely decomposing require-
+    ments into tasks because tasks make it is easy to lose sight of the ultimate goal-
+    the satisfied requirement.    
+
+    Now we know that we should split our requirements into small, focused
+    tests rather than tasks.
+
+  - What are good tests made of?
+
+    There are plenty of rules for the technical implementation of a (unit) test, 
+    2 but from the perspective of decomposing requirements into tests, 
+    two properties of a good test can be identified as especially important:
+    * A good test is atomic.
+    * A good test is isolated.
+
+    What these properties are saying is that a good test tests a small, focused, atomic
+    slice of the desired behavior and that the test should be isolated from other tests
+    so that, for example, the test assumes nothing about any previously executed tests.
+
+  - Working from a test list
+
+    Armed with an initial set of tests, we can proceed to making them pass, one by 
+    one. To start with, we need to pick one of the tests. Often the one we think is the
+    easiest to make pass or one that represents the most progress with the least effort.
+
+  - Programming by intention
+
+    When you’re writing tests before the production code they’re supposed to test,
+    you inevitably face a dilemma: how to test something that doesn’t exist without
+    breaking our test-first rule. The answer is as simple as the rule was—imagine the
+    code you’re testing exists!
+
+    We imagine the ideal shape and form of the production code from this particular 
+    test’s point of view.
+
+    Programming by intention, the concept of writing code as
+    if another piece of code exists—even if it doesn’t—is a technique that makes you
+    focus on what we could have instead of working around what we have.
+
+
+example =>
+
+  List of requirements
+
+    * The system replaces variable placeholders like ${firstname} and ${lastname}
+      from a template with values provided at runtime.
+    
+    * The system attempts to send a template with some variables not populated
+      will raise an error.
+    
+    * The system silently ignores values for variables that aren’t found from the
+      template.
+    
+    * The system supports the full Latin-1 character set in templates.
+    
+    * The system supports the full Latin-1 character set in variable values.
+
+  Tests are typically much more explicit, describing the expected
+  behavior for specific scenarios rather than articulating a generic description of
+  that behavior.
+
+  List of Tests
+
+    * Evaluating template “Hello, ${name}” with the value “Reader” for variable
+      “name” results in the string “Hello, Reader”.
+    
+    * Evaluating template “${greeting}, ${name}” with values “Hi” and “Reader”,
+      respectively, results in the string “Hi, Reader”.
+    
+    * Evaluating template “Hello, ${name}” with no value for variable “name”
+      raises a MissingValueError .
+    
+    * Evaluating template “Hello, ${name}” with values “Hi” and “Reader” for
+      variables “doesnotexist” and “name”, respectively, results in the string
+      “Hello, Reader”.
+    
+    * And so forth... (We could, for example, include some specific examples that
+      would serve as proof that the system handles Latin-1 characters.)
+
+  The requirements have been transformed into something that’s clearly a degree more 
+  concrete, more executable, more example-like. With these tests as our completion 
+  criteria, there’s no question of whether we’re there yet or not.
+
+  With this kind of test, we are finally able to produce that binary answer for the
+  question, “am I done?” The test list itself is never done, however. The test list is a
+  working document to which we add new tests as we go. We’re bound to be missing
+  some tests from our initial list, and we’ll likely think of a bunch of them while
+  we’re deep into implementing some other test. At that time, we write those tests
+  down and continue with what we’re working on.
+
+2. Write the first test and make it compiled, but it will fail
+
+
+3. Make the test pass in the easiest and quickest way possible.
+
+  - triangulation: 
+    Is a technique in which we apply different values to the same method
+    in different tests. it really can help in avoiding premature opti-
+    mization, feature creep, and over-engineering in general.
+
+
+4. Breadth-first, depth-first
+
+  - bf => With a breadth-first strategy, we implement the higher-level functionality first by
+          faking the required lower-level functionality.
+
+          We could decide to go breadth-first, writing tests against the public interface 
+          of the Template class; making them pass by faking the internals,
+          the lower-level functionality; and only then proceed to writing tests 
+          for (and implementing) the layer beneath the original one.
+
+  - df => With a depth-first strategy, we implement the lower-level functionality first 
+          and only compose the higher-level functionality once all the ingredients are 
+          present.
+
+  
+  when I think of worries or deficiencies while you are implementing the logic to make  
+  a test pass, you should write them down as new tests on the list.
+
+  When we find that, for example, something is wrongly implemented or missing
+  altogether while we’re working on one test, it’s usually a good idea to write down a
+  short reminder and continue with what we’re working on. This let’s us focus on one
+  task at a time instead of overloading our brains by jumping back and forth between
+  multiple things (and likely making a mess of our code base in the process).
+
+5. Remove redundant tests
+
+  leaving the test methods themselves delightfully trivial and
+  focusing only on the essential—the specific aspect of functionality they’re testing.
+
+  
