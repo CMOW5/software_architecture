@@ -1,0 +1,9 @@
+
+1. Learning by writing tests
+
+  Learning tests are automated tests whose purpose is to verify assumptions about a
+  piece of code, therefore teaching us—by example—what works.
+
+2. Keep an uniform level of abstraction in your functions
+
+
