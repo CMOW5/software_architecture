@@ -1,0 +1,352 @@
+
+
+1. Test-selection strategies
+
+  To Select the next test We need to rely on our intuition and a variety of
+  heuristics when thinking about the multiple properties of the candidate tests. 
+  To start with, we might want to consider the following four strategies to 
+  aid our decision of which test to write next:
+  
+  - Diving first into details versus starting with the big picture:
+
+    Details first is a good way of tackling risks such as, “Are we able to recognize
+    a pattern from a user-submitted image?” but solving the pattern recognition 
+    problem delays progress (certainty) regarding the big picture. Big-picture first, 
+    on the other hand, is a good way of testing out the envisioned design quickly 
+    without needing to worry about the details. The downside of big-picture first 
+    is that we’re delaying progress on the details.
+
+  - Exploring uncertain territory versus sticking with the familiar and comfortable
+
+    Reducing uncertainty is one factor we might consider when selecting the next
+    test. The alternative for reducing uncertainty would be to stick with the familiar
+    and proceed on a safe, known path for the moment, dealing with the uncertain
+    later. The advantage of exploring the uncertain is simple and straightforward—
+    we’re effectively reducing risks by turning the unknown into the known.
+
+    Although there is value in reducing risk, sometimes there’s even more value in
+    quickly beating down a known path and picking the low-hanging fruit first,
+    instead of climbing the tree right away to figure out whether we can do it.
+  
+  - Going for the highest value versus picking the low-hanging fruit first
+
+    Looking at a list of tests we have yet to write, we can usually identify a couple of
+    tests that are clearly more work than others. Similarly, we can usually identify dif-
+    ferences in how valuable the behavior represented by the test in question is for
+    the larger whole. Ideally, we should try to identify and select tests that let us make
+    the most progress (yield the most value) with the smallest effort. Most of the time,
+    however, there’s no such clear candidate, and we need to decide among multiple
+    tests with more or less equal benefit-to-effort price tags.
+
+    A typical (if somewhat exaggerated) example of a high-value test versus a low-
+    hanging fruit might be testing an object for positive functionality versus testing
+    the same object for handling null input. The positive functionality is likely more
+    laborious to implement but almost by definition yields more value. The defensive
+    functionality, handling null input, is likely far easier to implement but also yields
+    much, much less value in terms of functionality.
+
+  - Treading the happy path 1 first versus starting with handling error situations.
+
+    As a rule of thumb, I drive for the happy path first before proceeding to handle
+    exceptional scenarios, such as exceptions thrown by third-party API s, malformed
+    input, and so forth. The reason for doing so is mostly about value. Even the most
+    robust system capable of handling any conceivable error situation is practically
+    useless when it isn’t able to perform its basic function. On the other hand, even a
+    system that, for example, is prone to crash if the network is temporarily down still
+    provides value as long as the network isn’t down.
+
+    but every once in a while we might face a situation where it makes sense to test-drive 
+    by leaving the happy path for last, first going through all error situations.
+
+  Don’t think too much about which test is the “right” one to write next.
+  There’s no right sequence in the first place, and these test-selection strategies will
+  become second nature over time.
+
+
+2. Making your test pass
+
+  there are many ways to. There are three ways to make progress: 
+  faking it, triangulation, and obvious implementation.
+
+  - Faking it:
+
+    Sometimes after writing a failing test, we don’t have an idea how to correctly
+    implement the code that makes the test pass. In such cases, we might want to
+    resort to faking the particular functionality so that we get back to green.
+    Faking it is better than staying in the red for a long time.
+
+    As it happens, the easiest way to fake something is often to return hard-coded results
+
+    After we’ve faked something, it’s easy to switch into triangulation mode, mainly
+    because we know there’s that one tiny snippet of clearly non-production-quality
+    code in our code base that we need to somehow smoke out and replace with a real
+    implementation.
+
+  - Triangulation:
+
+    When we wanted to squeeze out a hard-coded string from our production code. 
+    Triangulation is a useful technique for evolving toward a correct implementation 
+    when we don’t yet have a clear concept of how to generalize a given piece of 
+    hard-coded logic.
+
+    In the triangulation technique we TDD folks use, each of the tests we write 
+    constrains the available solution space to one dimension. When we have enough tests, 
+    the tests effectively narrow down—triangulate—the exact solution we were looking for.
+
+    For example, in developing a credit-card validation component, we might not
+    know how to structure our class hierarchy for supporting multiple credit cards
+    with their slightly differing number lengths and validation rules. Using triangula-
+    tion, we might first write tests and implement the code for validating just one
+    brand of cards, say, MasterCard. These tests would be easy to write, and the code
+    to satisfy those tests would be just as straightforward.
+    Next, we’d pick another card vendor, say, Visa, and we’d write tests to verify
+    that our component handles Visa as well as MasterCard, distinguishing between
+    them where necessary. These new tests would slowly start pushing our code
+    toward a state where the suitable places for generalization become obvious. By the
+    time we’re adding a test for Diners Club, it’s likely that we’ll see where the code
+    wants us to generalize.
+
+  - Obvious implementation
+
+    Luckily, most of the time the necessary step to make a test pass is an obvious one.
+    We don’t mean obvious as in hard coding something, but rather as the “correct”
+    implementation being obvious. In such situations, we can simply proceed with
+    what we consider an obvious implementation, taking a slightly bigger step than we
+    usually take when triangulating or faking our way towards the ultimate goal.
+
+3. Prime Guidelines for test-driving
+
+  - Do. Not. Skip. Refactoring:
+
+    Not refactoring mercilessly and leaving duplication in the code base is about
+    the closest thing to attaching a time bomb to your chair. Unfortunately, we are
+    good at remembering the “test” and “code” steps of the TDD cycle and extremely
+    proficient at neglecting a code smell that screams for the missing step.
+
+    pay attention to not skipping refactoring. Crosscheck with your programming 
+    buddy to spot any duplication you may have missed.
+
+  - Get to green fast:
+
+    We don’t, however, go for the simplest design right off the
+    bat in the code step. Instead, we should strive to get back to green fast. 
+    The code step is where we get to that green bar with as few edits as possible. 
+    The refactoring step is where we perfect our design.
+
+  - Slow down after a mistake:
+
+    It is common for developers practicing TDD to start taking slightly bigger and 
+    bigger steps as time goes by. At some point, however, we’ll take too big a bite 
+    off our test list and end up reverting our changes. At these points, 
+    we should realize that the steps we’re taking are too big compared to our 
+    ability to understand the needed changes to our implementation. 
+    We need to realize that we must tighten our play. Small steps.
+
+
+4. Essential testing concepts.
+
+  - Fixures:
+
+    a fixture is the shared state from which all the different test methods of a test 
+    class begin their execution. Fixtures are more than just what we create in the 
+    setup method.
+    To summarize the essence of fixtures, they’re the whole shebang—the state of
+    the whole runtime environment—rather than just the instance variables of a test
+    class instance and the internal state of those objects.
+
+    => fixures remove duplication
+
+    Fixtures move the shared state for multiple tests into one place, 
+    effectively removing duplication.
+
+    Although removing all duplication is definitely a good rule of thumb, 
+    sometimes it’s better to leave some duplication in our test code for the 
+    sake of readability.
+
+    a fixture that’s built by each test method from scratch with
+    zero commonalities in setup—is definitely an anti-pattern and should be reme-
+    died. Either there’s too much duplication between the tests or there’s no cohe-
+    sion between them, the latter of which is a clear indicator that the test class should
+    be split into two or more classes.
+
+    => fixures allow for focused tests
+
+    A key to being able to have a focused test is to have a suitable fixture that 
+    brings the system and the objects involved to a state in which the test doesn’t 
+    need to do much more than a single assertion call, possibly after first invoking 
+    a one-liner on the object being tested.
+
+    We don’t waste any of our precious time wading through code, trying to figure out
+    where “it” happens. When our fixture is built well, the fixture tells us the context
+    and the test goes straight to the point.
+
+    try to keep focused tests that communicate intent effectively, rather than complex 
+    tests that are so unfathomable that a week later we can’t tell whether the test 
+    is correct or not.
+
+
+  -Test Doubles
+
+    Sometimes one of our difficulties in testing a given class or object have to do
+    with their collaborators and other kinds of dependencies. (Objects that are difficult)
+    to create.
+
+    Test doubles are objects that stand in for the real thing. They pretend to be some-
+    thing they’re not, but they do it in a way that the client has no idea, and they typically
+    do it faster than the real thing—often in terms of both execution time and time
+    spent writing and maintaining the test. A typical use of test doubles in our unit tests
+    is to first create the test double (or multiple, depending on your needs), then con-
+    figure state and/or behavior and/or expectations for the test double, pass the test
+    double to the code you’re testing, and verify the results.
+
+    => state based testing
+
+      State-based testing refers to the use of the fixture objects’ 
+      (the objects that make up the test fixture) internal state after 
+      invoking the class under test in order to verify the correct behavior. 
+      We verify the correctness by comparing the primary (class under test) 
+      and the collaborator objects’ state to what we expect them to be.
+
+      In some cases, when the fixture is small and doesn’t need much setup, state-
+      based testing is a good way to use test doubles, especially if we can use a readily
+      available stub implementation for the required interface instead of writing our
+      own. In some cases, however, we might want to test for interactions rather than
+      changes in the objects’ states.
+
+    => testing for interactions
+
+      Interaction-based testing takes a vastly different approach to verifying correct
+      behavior. Instead of asserting that the ending states of the object under test and
+      its collaborators match what we expect, interaction-based tests verify that the
+      object under test interacted with its collaborators as we expected.
+
+      In other words, we are not interested in the internal state of the collaborators, 
+      but we are interested in whether the object being tested made the expected method 
+      calls with the expected parameters and, if applicable, in the expected sequence.
+
+      Interaction-based tests are made possible by what we call dynamic mock object
+      libraries.
+
+      What these libraries do is let us point to an interface (or a class) and specify
+      the expected collaborations (method calls); the library then gives us a test double
+      that implements that interface. We can then pass on the test double, which we
+      generally refer to as a mock object, to our code under test. After executing the class
+      under test, we can ask the mock object to verify that its expectations were indeed
+      met.
+
+      remember: when the interactions become long and complex, it’s time to refactor.
+
+      We lean on interaction-based testing to verify how an object talks to its 
+      collaborators; and we lean on state-based testing to verify how well the
+      object listens.
+
+5. Tests Doubles
+
+  As we just learned, test doubles are substitutable, alternative implementations of
+  an interface or class that we don’t want to use in a test—the reason often being
+  that the real thing has one of these issues:
+  
+  - It’s too slow.
+  - It’s not available (or doesn’t exist).
+  - It depends on something that’s not available (or doesn’t exist).
+  - It’s too difficult to instantiate and configure for a test.
+
+  Further examples of issues with regard to testability of objects could include 
+  nondeterministic behavior, such as primary-key generation or time-dependent 
+  functionality. Additionally, it is often difficult to cause exceptions when using
+  real objects in tests (for example, try to think of a way to unplug and plug the 
+  network cable from your unit test in order to cause a temporary network error).
+
+  There are, however, more than one type of test double that we can differentiate 
+  using the simple classification scheme of stubs, fakes, and mocks. 
+
+  - Stubs: 
+      Stubs are essentially the simplest possible implementation of a given interface
+      you can think of. For example, stubs’ methods typically return hardcoded, mean-
+      ingless values.
+
+  - Fakes: 
+      Fakes are a degree more sophisticated than stubs in that they can be 
+      considered an alternative implementation of the interface. In other words, 
+      a fake looks like a duck and walks like a duck even though it isn’t a real
+      duck. In contrast, a stub only looks like a duck.
+
+  - Mocks: 
+      Mocks can be considered even more sophisticated in terms of their 
+      implementation, because they incorporate assertions for verifying 
+      expected collaboration with other objects during a test. 
+      Depending on the implementation of a mock, it can be set up either to 
+      return hardcoded values or to provide a fake implementation of the logic. 
+      Mocks are typically generated dynamically with frameworks and libraries, 
+      such as EasyMock, but they can also be implemented by hand.
+
+      mock example =>
+
+        @Test
+        public void testOrderProcessorWithEasyMock()
+          // arrange
+          float initialBalance = 100.0f;
+          float listPrice = 30.0f;
+          float discount = 10.0f;
+          float expectedBalance =
+              initialBalance - (listPrice * (1 - discount / 100));
+          Customer customer = new Customer(initialBalance);
+          Product product = new Product("TDD in Action", listPrice);
+
+          // record expected collaboration with mock PricingService
+          PricingService mock = createMock(PricingService.class);
+          expect(mock.getDiscountPercentage(customer, product)).andReturn(discount);
+          replay(mock);
+
+          // act
+          OrderProcessor processor = new OrderProcessor();
+          processor.setPricingService(mock);
+          processor.process(new Order(customer, product));
+
+          // assert
+          assertEquals(expectedBalance, customer.getBalance(), 0.001f);
+          verify(mock);
+          
+6. Guidelines for testable design
+
+  When we test-drive code, we’re making design decisions, and those decisions
+  have a direct effect on how easy it is for us to work with that code in the future.
+  Writing the tests before the code does indeed enforce a certain level of testabil-
+  ity, but it helps if we’re aware of what kinds of designs promote testability and
+  what kinds of designs might work now but will likely blow up soon after.
+
+  Aiming at helping you avoid creating testability challenges for yourself, here
+  are a few simple design guidelines that we should pay attention to:
+  
+  - Choose composition over inheritance:
+
+    Although inheritance it's a nice feature for a programming language, 
+    inheritance does have its down side when it comes to testability, maintainability,
+    and overall flexibility of design.
+
+    Specifically, having to deal with an inheritance hierarchy can sometimes make it 
+    unnecessarily difficult to instantiate our objects in a test harness. 
+    In Java, for example, we might have to provide valid input only needed by the 
+    superclass constructor even though we’re just interested in an aspect 
+    of the child class.
+
+    Furthermore, even the smallest of changes could potentially cause a ripple
+    effect throughout the class hierarchy, which is obviously not an ideal situation.
+
+    Composition is a way to build objects that provide complex functionality by com-
+    bining a set of less complex component objects. The top-level composite object del-
+    egates work to its components instead of invoking methods from its superclass. 
+    In essence, composition is based on object-level division of responsibility instead of
+    static, class-level division.
+
+    Composition tends to be slightly more verbose than
+    inheritance, measured in lines of code, but its improved characteristics in terms of
+    testability, flexibility, and maintainability often more than outweigh the cost of
+    those extra lines of code.
+
+  - Avoid static and the Singleton.
+
+    
+
+  - Isolate dependencies.
+  - Inject dependencies.
