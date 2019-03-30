@@ -45,7 +45,7 @@
     functionality, handling null input, is likely far easier to implement but also yields
     much, much less value in terms of functionality.
 
-  - Treading the happy path 1 first versus starting with handling error situations.
+  - Treading the happy path first versus starting with handling error situations.
 
     As a rule of thumb, I drive for the happy path first before proceeding to handle
     exceptional scenarios, such as exceptions thrown by third-party API s, malformed
@@ -346,7 +346,511 @@
 
   - Avoid static and the Singleton.
 
+    Depending on how intertwined your par-
+    ticular static/Singleton is in the code base you’re testing, it might be surprisingly
+    difficult or awkward to replace the implementation behind the static method with
+    a test double for your test.
+
+    Static method calls are difficult to fake because the target class for the call is
+    hardcoded. Similarly, it is difficult to substitute a fake implementation for a Singleton class
+    obtained through the usual (static...) getInstance() method call.
+
+    In fact, it’s not the Singleton pattern itself that causes trouble—it’s 
+    the default implementation of the Singleton.
+
+    In most cases, however, I’d recommend first looking at ways to get rid of the static
+    methods by converting them into instance methods. In many cases, and with
+    object instantiation being dirt cheap with modern virtual machines, that’s a ques-
+    tion of simply removing the static keyword and replacing static references with
+    instance method calls.
+
+    public class OrderProcessor {
+      public void process(Order order) {
+        PricingService service = PricingService.getInstance();
+        // use the PricingService object for processing the order
+      }
+    }
+
+    This is bad form. We’re mixing the acquisition of the dependencies with the logic
+    that makes use of those dependencies.
+
+  - Isolate dependencies:
+
+    In order to facilitate replacement of dependencies with test doubles, it is essential
+    to first isolate the dependencies in a way that lets us perform the replacement as
+    easily as possible.
+
+    public class OrderProcessor {
+      public void process(Order order) {
+        PricingService service = getPricingService(); // this is called a seam
+        // use the PricingService object for processing the order
+      }
+      
+      // this can can be overridden to return test double
+      // this is called an enabling point
+      protected PricingService getPricingService() {
+        return PricingService.getInstance();
+      }
+    }
+
+    The test will look like
+    @Test
+    public void testOrderProcessorByExploitingTheSeam() {
+      OrderProcessor p = new OrderProcessor() {
+        protected PricingService getPricingService() {
+          return new FakePricingService();
+        }
+      };
+    ...
+    }
+
+
+  - Inject dependencies.
+
+    It is an approach to structuring code in a way that reduces direct dependencies to
+    indirect dependencies or, to put it another way, replaces the getter with a setter.
+
+    public class OrderProcessor {
+
+    //  Store dependencies as instance variables
+    private PricingService pricingService;
+   
+      /**
+      * Hand me my dependency by calling this method.
+      * (Let someone else give dependencies)
+      */
+      public void setPricingService(PricingService pricingService) {
+        this.pricingService = pricingService;
+      }
+    
+      /**
+      * Please call setPricingService() before invoking me. Thanks.
+      */
+      public void process(Order order) {
+        //Use dependency directly
+        float price = pricingService.getDiscountedPrice(order)
+      }
+    }
+
+    The test will look like
+
+    @Test
+    public void testOrderProcessorWithDependencyInjection() {
+      OrderProcessor p = new OrderProcessor();
+      p.setPricingService(new FakePricingService());
+    }
+
+    Constructor based injection can be considered a better ap-
+    proach than setter-based injection because with setter-based injection, the pro-
+    grammer is expected to take responsibility for knowing the order in which the
+    dependencies should be injected, Thus leaving the possibility of having 
+    half-configured objects in the wild.
+
+
+7. Unit Testing patterns
+
+    - Patterns for writing assertions
+
+
+      * Resulting State Assertion:
+
+        The Resulting State Assertion pattern is the single most common way to perform
+        assertions in a unit test. The fundamental idea is to exercise some functionality 
+        on the fixture objects and afterward assert that the internal state of the fixture
+        objects match our expectations.
+
+        @Test
+        public void sizeOfListReflectsItemsAddedToIt() throws Exception {
+          List<String> list = new ArrayList<String>();
+          list.add("something");
+          assertEquals(1, list.size()); // state verification
+        }
+
+        the problem is that the previous test would pass with an implementation 
+        of size that always returns 1
+
+        In some cases, however, it’s worth it to not just assert the after
+        state but also the before state, which is where the Guard Assertion 
+        pattern comes into play.
+
+
+      * Guard Assertion:
+
+        The Guard Assertion pattern is about making explicit the assumptions made
+        about the fixture right before invoking the functionality we want to test.
+
+        @Test
+        public void listIsNoLongerEmptyAfterAddingAnItemToIt()
+        throws Exception {
+          List<String> list = new ArrayList<String>();
+          assertTrue(list.isEmpty());
+          // guard assertion
+          list.add("something");
+          assertFalse(list.isEmpty()); // state verification
+        }
+
+        Notice how the Guard Assertion ensures that the list’s isEmpty method correctly
+        returns true for an empty list before we invoke the add method—which we’re
+        really testing with this test.
+
+        The Guard Assertion pattern is a common accomplice of the Resulting State
+        Assertion pattern. That is, the two are often combined into a sequence where the
+        test first asserts that the before state matches the test author’s expectations and
+        only then proceeds to invoke the functionality and assert against the resulting
+        state.
+
+        Sometimes, however, the purpose of adding a Guard Assertion is to make sure
+        that an assumption about the fixture’s starting state is correct. In these cases, it
+        may make sense to move the Guard Assertion(s) into the end of the setup
+        method. After all, the setup method is what those assertions are testing.
+
+
+      * Delta Assertion
+
+        Sometimes we may need to work with code that we don’t have full control over in
+        our tests. Specifically, our tests may have a fixture we’re not in control of. 
+        This yields the problem of how to write reliable, robust, self-checking tests 
+        when we cannot hard code the fixture’s state. The solution is to not assert 
+        against the absolute state after invoking the code under test, but rather 
+        to test that the difference—or delta—between the initial and after states 
+        is what we expect.
+
+        public class TestAddingToArrayList {
+          private ArrayList<String> list;
+          // setup method omitted for brevity
+
+          @Test
+          public void sizeOfListReflectsItemsAddedToIt() throws Exception {
+            int sizeBefore = list.size();
+            // record the "before" state
+            list.add("something");
+            assertEquals(sizeBefore + 1, list.size());
+            // delta verification
+          }
+        }
+
+        recording the state before exercising the code under test in order to be able
+        to express the final assertion relative to the before state.
+
+        Delta Assertions also have the advantage over regular Resulting State Assertions 
+        in that the test is more focused on the essence of what it’s testing rather than 
+        throwing seemingly arbitrary values at the poor co-worker trying to make sense 
+        of why our test expects the list to contain some magic number of items.
+
+      * Custom Assertion:
+
+        Sometimes the amount of code verifying our expectations vastly exceeds the
+        amount of code required to invoke the code under test. When that happens 
+        (and especially if it happens more than once), it’s often a good idea to
+        extract a Custom Assertion method from the test in order to encapsulate 
+        complex verification logic behind a nice little method we can call from 
+        the test.
+
+      * Interaction Assertion:
+
+        Interaction Assertions are funny things, in that they don’t verify that our 
+        code produces the correct results. Instead, they verify that our code 
+        interacts with its collaborator objects as we expect it to.
     
 
-  - Isolate dependencies.
-  - Inject dependencies.
+    - Patterns for writing Fixures
+
+      Creating hordes of objects in a massive
+      setup method that can’t fit on one screen is bad. 
+      Complex, massive code is a problem whether it’s in production code or test code.
+
+      * Parameterized Creation Method
+
+        A lot of the objects in a typical fixture are so-called entity objects in 
+        that they represent something that exists in the business domain either as 
+        a concrete thing or as a virtual concept. These types of objects generally 
+        have a lot of attributes, and most of the code in the bad fixtures I see is 
+        about populating those attributes - even though the vast majority of them 
+        are of no importance to the test at hand.
+
+        The Parameterized Creation Method attacks this situation by hiding the non-
+        important attributes from the setup by extracting the object creation into a separate
+        creation method, which takes the variable attributes as arguments and populates
+        the non-important ones with constant or random values.
+
+        alice = new Person();
+        alice.setId(1L);
+        alice.setFirstname("Alice");
+        alice.setLastname("Adams");
+        alice.setSsn("111111");
+
+        billy = new Person();
+        billy.setId(2L);
+        billy.setFirstname("Billy");
+        billy.setLastname("Burke");
+        billy.setSsn("222222");
+
+        replace with => 
+
+        // only the important attributes for this test are provided
+        clark = createPerson("Clark", "Cable");
+        billy = createPerson("Billy", "Burke");
+
+
+      * Object Mother
+
+        At first, we can do a lot of good by refactoring our test classes to use local 
+        creation methods instead of duplicating code. Soon, we’re likely to find ourselves
+        duplicating the creation methods between different test classes. The next natural
+        step in removing that duplication is to move the creation methods into a separate
+        helper class. The Object Mother pattern describes just such an aggregate of cre-
+        ation methods.
+
+        mother object is an object or a set of objects that does the following:
+        - Provides a fully-formed business object along with all of its required 
+          attribute objects
+        - Returns the requested object at any point in its lifecycle
+        - Facilitates customization of the delivered object
+        - Allows for updating of the object during the testing process
+        - When required, terminates the object and all its related objects at the end
+          of the test process
+
+        Object Mother might provide methods for modifying the given domain objects by, 
+        for example, attaching objects to each other, removing relationships, 
+        or moving the given objects to a desired state.
+
+        Although it's a powerful tool and catalyst to motivate test writing, Object
+        Mothers take time to build. As such, I would recommend taking small steps refac-
+        toring your current test code base toward having cohesive creation methods and
+        eventually refactor the creation methods and their canned test data into one or
+        more Object Mothers.
+        
+      * Automated Teardown
+
+        Examples of such necessary cleanup might be integration tests cleaning up 
+        created objects from a database or wiping generated files from a file system.
+
+        When the teardown logic is complex or there are simply a lot of objects 
+        to tear down, our tests become cluttered and we can easily skip cleaning up 
+        something accidentally. And that can create problems down the road that are 
+        extremely hard to debug and trace back to the source.
+
+        The Automated Teardown pattern tackles this problem by encapsulating the
+        teardown logic into a separate class and bringing the responsibility for 
+        triggering that logic right next to where the objects are created in the 
+        first place.
+
+8. General tests patterns
+
+  - Parameterized Test
+
+    Every now and then, we find ourselves writing almost identical tests—tests where
+    only a few input values are different but the logic is essentially the same. In
+    those situations, we might want to consider turning our test class into a Parame-
+    terized Test.
+
+    The fundamental idea is that there’s one and only one test method, which encap-
+    sulates the test logic to be applied to the parameterized data. There obviously also
+    needs to be a method that provides the parameterized data, and there needs to be
+    some code to bind the provided data to invocations to the test method.
+
+  - Self-Shunt
+
+    it is kind of a test double-except that it’s our test class. The Self-Shunt pattern, 
+    is one where the test class instance acts as a test double in its own tests.
+
+    When a the fake grows in size, so does the degree of cluttering, driving us 
+    toward having a Self-Shunt or an actual, named test-double class.
+
+    full-blown test doubles have their own disadvantages, too. If we’d like to share 
+    objects and states between our test methods and the test double,
+    an Intimate Inner Class might be a better option.
+
+    public class SelfShuntExample implements PricingService {
+      @Override
+      public float getDiscountPercentage(Customer c, Product p) {
+        return 10.0f;
+      }
+      
+      @Test
+      public void testOrderProcessorWithMockObject() throws Exception {
+      // some setup omitted for brevity...
+        OrderProcessor processor = new OrderProcessor();
+        processor.setPricingService(this);
+        processor.process(new Order(customer, product));
+        assertEquals(expectedBalance, customer.getBalance(),
+        0.001f);
+      }
+    }
+
+  - Intimate Inner Class
+
+    There are occasions when we’d like to share some objects between the test class
+    and a test double. This can be fulfilled with a getter method but it exposes the
+    internals of a test double.
+
+    the ability of a non-static inner class to access
+    and assign to the test class’s fields can yield nice, compact test code compared to,
+    for example, exposing the internals of a test double through getter methods.
+
+    public class IntimateAnonymousInnerClassExample {
+      
+      // this is shared between test class and test double
+      private StartStopSynchronizedThread thread;
+      
+      @Test
+      public void testStartingAndStoppingThreadsThroughAnExecutorService()
+        throws Exception 
+      {
+        Server server = new Server();
+        server.setThreadFactory(new ThreadFactory() {
+          // Intimate Inner Class
+          public Thread newThread(Runnable task) {
+            thread = new StartStopSynchronizedThread(task);
+            return thread;
+          }
+        });
+
+        server.start();
+        // tests can access shared fields
+        thread.shouldBeStartedWithin(1, TimeUnit.SECONDS);
+        server.stop();
+        // tests can access shared fields
+        thread.shouldBeStoppedWithin(1, TimeUnit.SECONDS);      
+      });
+
+    - Privileged Access
+
+      You may have been in a situation where you needed to change that one bit of legacy
+      code in order to test your stuff—but there was some reason you couldn’t touch the
+      legacy code. In such situations, it may be a reasonable workaround to invade the
+      legacy code’s privacy and directly tweak its internals through the Reflection API in
+      order to make it possible for us to write tests—Privileged Access, if you will.
+
+      example => 
+        Inject.staticField("foo").of(LegacyCode.class).with(ourTestDouble);
+
+      The ability to inject or read private fields of classes or objects isn’t too
+      useful for projects that have been using TDD from the get-go, but for those 
+      working with mounds of legacy code not designed with testability in mind,
+      these kinds of tricks and utilities can save the day. However, if we can change 
+      the legacy code we should prefer doing that instead of falling back to some 
+      Reflection trickery.
+
+    - Extra constructor
+
+      The world of computing is full of monolithic code bases that look like a spaghetti
+      monster. When working in these code bases, it’s not uncommon to have a head-
+      ache because we can’t seem to instantiate some class without pulling in a dozen
+      other classes along the way. The problem, of course, is that the dependencies of
+      the class we’d like to use haven’t been properly isolated. The proper solution
+      would be to isolate the dependencies, perhaps by driving the architecture toward
+      dependency injection, but that might take time. The Extra Constructor pattern,
+      however, provides us with a nice temporary solution.
+
+      The basic idea is that because we cannot substitute the dependencies from the
+      outside, we need to do it from the inside. Thus, we add a new constructor to the
+      class we want to test—one that takes as arguments the dependencies we’d like to
+      substitute. This new constructor can then first delegate to the real constructor
+      and subsequently store the passed-in test-double implementations in place of the
+      real dependencies.
+
+    - Test-Specific Subclass
+
+      Another common anti-pattern I’ve seen a lot during my programming career is
+      the violation of the Single Responsibility Principle
+
+      The Test-Specific Subclass pattern lets us expose or modify internal state or
+      behavior in some scenarios were the SRP is violated. 
+      for example, we might create a behavior-modifying subclass of the given class
+      and override some method to always return some hardcoded value, 
+      because we are no interested in what that method does in particular.
+
+
+9. Working with legacy code
+
+  Legacy code is traditionally considered to mean code written by someone else some-
+  where at some point in time. Old code, that is. Old code with a bad stench! The
+  source for that bad stench is not the fact that the code is old but that it’s difficult
+  to read and possibly buggy, and there’s no way of telling whether changing one
+  thing here will break stuff elsewhere
+
+  legacy code = code without tests
+
+  the vast majority of us are not working on green-field projects but rather
+  maintaining, developing further, and integrating with systems that have been and
+  will be running in production for an arbitrary number of months, years, or even
+  decades. This means that we must be able to use TDD in the context of an existing
+  code base that wasn’t developed test-first from the beginning.
+
+  - Test driving legacy development
+
+    The way to develop test-first in the context of legacy code is similar to what we
+    need to do when others on our team or project don’t write tests first or at all. We
+    begin by writing tests around the code we want to change. That might require first
+    breaking some dependencies without having tests to watch our back, which means
+    proceeding more slowly than usual. That shouldn’t discourage you, however,
+    because breaking those dependencies and getting in those tests will pay back the
+    investment sooner than you think.
+
+    the process of working with legacy code looks like this
+
+    1. identify change points
+    2. identify inflection point
+    3. cover the inflection
+    3a. break external dependencies
+    3b. break internal dependencies
+    3c. write tests
+    4. make changes
+    5. refactor covered code.
+
+    The process described could be split into three main phases:
+
+    1. Analizing the change
+
+      When we start analyzing the change we want to make, we first identify the change
+      points. Change points are the places in the code base where we need to edit code
+      in order to implement the desired change.
+
+      When we know where the change should take place, we identify the inflection
+      point. The inflection point (or test point) is the point “downstream” in our code
+      where we can detect any relevant change in the system’s behavior after touching
+      the code in the change points. Typical inflection points are close-proximity seams
+      such as method invocations after or around the change points
+
+      Close-proximity inflection points typically cover the change point tightly, making
+      it easy to test for the current behavior in detail.
+
+      More distant inflection points by definition cover more ground and, thus,
+      may protect us from side effects of the change that our analysis had missed
+
+      Close-proximity inflection points tend to provide a more localized checkpoint
+      without too much noise around the signal. Distant inflection points, on the other
+      hand, are more likely to catch side effects our analysis hadn’t found—but in
+      exchange for potentially more effort in writing the tests because we often don’t
+      have access to the kind of detailed information we usually have when testing close
+      to the change point.
+
+    2. Preparing for the change
+
+      Once we’ve spotted the change and inflection points, we proceed to cover the
+      inflection point with tests that nail down the current behavior before we make our
+      change. This might involve breaking dependencies with careful edits that expose
+      the dependency through a seam we can manipulate in our tests.
+      The tests we write to cover the inflection point are typically what we call charac-
+      terization tests, meaning that they nail down the current functionality as is, without
+      worrying about whether that behavior is correct. Characterization tests are often
+      also learning tests in the sense that we use them to verify assumptions we’ve made
+      while identifying the change points.
+
+    3. Test-driving the change
+
+      After we’ve written tests around the change and inflection points to the degree
+      that we’re comfortable with our test coverage, we make the change by adding a
+      test for the desired new functionality. As we proceed with implementing the
+      change, our characterization tests tell us if we broke anything while editing the
+      legacy code, and the newly added tests tell us when we have managed to imple-
+      ment the desired change correctly. Finally, once we’ve successfully made the
+      change and all tests are passing, we refactor the code as usual, enjoying the cover
+      of our automated tests.
+      That’s all there is to working with legacy code in general. The main differences
+      between the regular test-driven development cycle and the process described are
+      that we need to write tests for the existing behavior before adding a test for the
+      new behavior and that we often need to make small dependency-breaking edits
+      without our safety net in order to be able to start writing those tests. It just
+      requires a bit more care and thought.
