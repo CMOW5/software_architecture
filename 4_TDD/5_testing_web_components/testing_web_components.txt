@@ -1,0 +1,58 @@
+
+1. Taming the controller
+
+  The main difficulties related to test-driving controller code, or writing auto-
+  mated tests for it in general, originate from dependencies to awkward or difficult
+  API s to mock.
+
+  * Test driving the Servlet API
+
+    // see the code in the book
+    The main key to have in mind here is that we are not interested in create
+    a web server that create the servlets, we just mock this objects an then 
+    we tests our implementation
+
+    example =>
+
+      public class EchoServlet extends HttpServlet {
+  
+        protected void doGet(HttpServletRequest request,
+          HttpServletResponse response) throws ServletException, IOException {
+        
+        // we want to mock the HttpServletRequest and the HttpServletResponse
+      }
+
+
+      @Test 
+      public void sometest() {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        request.addParameters(....)
+
+        // we create an instance of our Servlet with the mocked objects
+        new EchoServlet().doGet(request, response);
+
+        // assertions
+      }
+  
+  * Test driving spring controllers
+
+    @Test
+    public void validLoginForwardsToFrontPage() throws Exception {
+      MockHttpServletRequest request = new MockHttpServletRequest();
+      request.setMethod("GET");
+      request.addParameter("j_username", VALID_USERNAME);
+      request.addParameter("j_password", CORRECT_PASSWORD);
+      MockHttpServletResponse response = new MockHttpServletResponse();
+      FakeAuthenticationService mock = new FakeAuthenticationService();
+      mock.addUser(VALID_USERNAME, CORRECT_PASSWORD);
+      LoginController c = new LoginController();
+      c.setAuthenticationService(mock); // inject the fake dependency 
+      ModelAndView v = c.handleRequest(request, response);
+      assertEquals("frontpage", v.getViewName());
+    }
+
+    In the light of these examples, there’s hardly a valid argument to claim that
+    test-driving controller classes in modern MVC frameworks is somehow difficult or
+    laborious. It’s all plain Java—the interfaces just tend to be slightly larger than our
+    application-specific ones typically are.
