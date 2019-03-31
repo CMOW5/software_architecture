@@ -1,0 +1,205 @@
+
+The main difference in data-access code compared to most other code is that
+its behavior typically spans multiple layers of a system’s architecture. Another
+common difference is that data-access code tends to make use of third-party API s
+that are, nicely put, sometimes not as testing-friendly as they could be. In order to
+be able to test without all of the third-party stuff constantly hitting the disk or a
+database server, we need to be able to separate these issues.
+
+test is not a unit test if:
+
+  - It talks to the database.
+  - It communicates across the network.
+  - It touches the file system.
+  - It can’t run at the same time as any of your other unit tests.
+  - You have to do special things to your environment to run it.
+
+These things are costly to do and make our tests run slower than necessary—
+sometimes up to several magnitudes slower than they would using a test double.
+With this in mind, we don’t want to hit a database repeatedly in our unit tests but
+rather want to fake it somehow.
+
+
+Speaking of database connections, let’s pull away from test-driving data-access
+objects with test doubles for a moment and think about the big picture. So far,
+we’ve executed our code only against test doubles, and we’ve configured them to
+expect certain queries with certain parameters, making them return hard-coded
+data. How do we know that the query we expected would work against the real
+database schema?
+The answer is, we don’t. Knowing our tools well does make for a good proba-
+bility that we’ve gotten a simple parameterized query correct, but we don’t really
+know until we’ve tested that it does work with the real thing
+
+ - Writing integration tests
+
+  Mock objects are a powerful tool for testing exception situations and avoiding
+  the burden of having to maintain a test database. On the other hand, as already
+  noted, we can’t be sure that we got our expectations correct until we execute our
+  data-access code and our selected persistence framework against a real database.
+
+  What is an integration test?
+
+  Integration tests for data-access code are tests that connect the code under test
+  into a database. In other words, we’re testing everything from the persistence 
+  logic layer down to the relational database.
+
+  In other words, we’re testing the end-to-end integration of our data-access
+  components, the persistence framework employed, and the relational database.
+  Having said that, we might stretch the definition of “end to end” a bit by swapping
+  a different relational database product for our tests than we have in production.
+  This is where we need to make informed decisions about what are acceptable dif-
+  ferences between the environment used for integration testing and the produc-
+  tion environment.
+
+  We want fast tests. Blazing fast. If we can’t get that, we want almost blazing fast.
+  What we don’t need is the absolute best, identical representation of the produc-
+  tion environment for our integration tests. Thinking about the kinds of assump-
+  tions we make while writing pure unit tests for data-access code, we can identify
+  three aspects that are more or less the biggest risks:
+
+    - Assumptions about the database schema or domain model:
+
+      The assumptions we make about the database schema or domain model are
+      largely about the existence of and the naming of fields and columns. This is a risk
+      because the references to fields or columns in our data-access code are often lit-
+      eral, expressed as strings rather than as part of our programming language syntax,
+      which our compiler would be able to verify for us.
+
+    - Assumptions about the query statements used:
+
+      Similarly, to the compiler, our query statements are just strings and nothing
+      more. Our ability to get them right is solely dependent on our knowledge of the
+      query language syntax. In some cases, it’s also dependent on the support for the
+      syntax features used by the underlying database engine. In other words, we need
+      to know our tools and, believe it or not, sometimes we make mistakes anyway.
+
+    - Assumptions about the object-relational mappings, if applicable:
+
+      The assumptions about our object-relational mappings are effectively an exten-
+      sion of the first class of assumptions. For example, when we wrote unit tests for
+      our Hibernate-backed DAO , we configured our mock objects to expect a certain
+      kind of query statement and to return data upon that query. In doing that, we
+      made assumptions about the mapping of the fields used in the query. Naming
+      conventions do help, but still we inevitably sometimes leave a typo in, only to be
+      discovered later when someone happens to use the functionality in a real deploy-
+      ment environment—finding out that lastName should’ve been lastname.
+
+    The good news is that these are all things that we can verify well enough with any 
+    standards-compliant relational database, even if it wouldn’t be the exact same product with which we’re
+    going to deploy to production.
+
+    - Selecting the database
+
+      When it comes to deciding which database to use in our integration tests, there
+      are a few factors to consider:
+
+      - How closely the setup matches our production environment:
+
+        Some differences can make our system incompatible with the production database, 
+        somewhat dysfunctional, or behave seemingly erratically in production, 
+        even though all of our integration tests are passing against the test database.
+        things like sequences or identity generators (AUTO_INCREMENT, SEQUENCE), 
+        stored procedures, keywords, etc.
+
+        Even after all of these gotchas, it still makes sense to see if there’s a way 
+        to use a substitute for the real database in our integration tests. 
+        After all, we’re interested in improving our productivity, and getting to use 
+        a database in our integration tests that’s easier and faster to set up can be 
+        a huge improvement—huge enough that it might well be worth the trouble of changing 
+        our code base to accommodate for differences between the database products.
+
+      - How easy it is to share and manage the configuration within the team:
+
+        Ideally, everything should work out of the box with no software to install 
+        manually. In practice, it’s often acceptable to be required to install 
+        software such as a database server as long as the installation doesn’t 
+        require too much configuration.
+
+        The problem with non-default configurations is that it suddenly becomes 
+        necessary to have developers maintain a custom configuration file somewhere 
+        specifying, for example, which port the database server is listening to and 
+        what are the username and password for connecting to it. A much better setup 
+        is one where all configuration information is maintained in the configuration 
+        management system, versioned along with revisions of the software itself and
+        not requiring a new developer to perform any manual work in order to get going.
+
+      - How easy it is to access and control the database
+
+        Having a database server for our integration tests to successfully run against 
+        is one thing. It’s another thing to find out what went wrong when a test fails.
+        Depending on the database server, the JDBC driver, and our persistence framework,
+        the reason for a given failure might be blatantly obvious from the error message 
+        or it might require an elaborate debugging session.
+
+        Having a local installation of a standalone database server listening for 
+        incoming connections on a network interface is probably the easiest of our options
+        when it comes to access.
+
+        Embedded databases fare worse in this regard, because we typically need to access 
+        them through the Java API in-process rather than be able to connect remotely with 
+        our favorite graphical database browser.
+    
+1. Integration tests in action
+
+  Integration tests that hit a database (or a web service, for example) are a must-
+  have. With that said, it’s worth noting that it is generally not necessary to test all
+  persistence-related operations end-to-end with a database if most of them are
+  similar. In other words, try to write integration tests against a database only for
+  a representative subset of all read and write operations (or for learning purpos-
+  es). The rest of the cases can then be covered with unit tests using test doubles,
+  which generally cuts down the overall test run times significantly.
+
+  -> Stay clean with transactional fixtures:
+
+    The fundamental advantage of using transactional fixtures over having our test
+    suite constantly populate the database into a known state before each and every
+    test is speed. Importing data from an external file can take a lot of time, and even
+    with small data sets, the number of tests accumulates the problem with slower test
+    execution.
+
+    The only significant disadvantage of transactional fixtures is that they cannot
+    be used for testing transactional behavior. That is, if our test is supposed to test
+    that a certain piece of code commits the ongoing transaction, it’s too late for us to
+    cry for a rollback in teardown.
+
+
+  - Should I drive with unit or integration tests?
+
+    One of the biggest downsides with integration tests is that the tests are slower to
+    execute. The slowness starts to show with only a handful of tests; and with the full
+    integration test suite taking up to 10 minutes to execute, the temptation to commit
+    changes before knowing their full effect on the health of the code base increases.
+
+    Another downside of integration tests as a driver for development is that
+    they’re incapable of simulating certain situations, and writing a unit test using test
+    doubles is often easier than setting up the test data for an integration test. For
+    instance, it’s pretty darn difficult to make a database connection fail temporarily
+    just at the right time, although it’s trivial to simulate the symptoms (an exception)
+    with test doubles. Further, it’s generally easier to wire a test double to return a set
+    of domain objects than it is to populate a database with equivalent data.
+
+
+2. FileSystem access
+
+  we should avoid file system access as far as possible, instead abstracting files 
+  with Java’s streams or the java.io.Writer and java.io.Reader interfaces. 
+  After all, most of the time we’re interested in the data inside the file, not the
+  file itself, and streams are well-suited for feeding data to our classes.
+
+  -> Pass around streams instead of files if you only care about the content of the file
+
+  -> Use custom File objects is situations where the code needs more than just
+      the contents of the file: for example, information about the file’s location, 
+      size, and so forth.
+
+      it might make sense to introduce a custom file interface, which would
+      be a façade for the java.io.File API , offering access both to metadata such as
+      the file’s path as well as to the file’s contents. With this kind of an interface, 
+      code dealing with files becomes easier to test, because we can truly simulate files 
+      without messing around with temporary files and directories.
+
+  -> Use a dedicated temp directory:
+
+      If we are facing a situation where we need to generate actual, physical files on the
+      file system, it makes sense to use a dedicated temporary directory for all of our
+      output files as well as for dynamically generated input files
