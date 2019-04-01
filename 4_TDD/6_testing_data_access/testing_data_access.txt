@@ -203,3 +203,12 @@ know until we’ve tested that it does work with the real thing
       If we are facing a situation where we need to generate actual, physical files on the
       file system, it makes sense to use a dedicated temporary directory for all of our
       output files as well as for dynamically generated input files
+
+  -> Clean up before, not after
+
+      Speaking of cleaning up, sometimes it might make sense to perform cleanup only
+      before each test and not clean up generated files afterward. The reason for this is
+      that sometimes the generated data might be non-trivial in size. With large data
+      sets, it’s useful to be able to study discrepancies between the expected and actual
+      data manually by using our chosen tools (a diff tool, for example) rather than
+      have the failing test wipe out all of our evidence.
