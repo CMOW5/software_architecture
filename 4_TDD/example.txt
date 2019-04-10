@@ -1,0 +1,46 @@
+TDD cycle
+
+"create an email template parser"
+
+1. Test
+2. Code to make the test pass.
+3. Refactor.
+
+//////
+
+1. set some requirements (card)
+
+  * The system replaces variable placeholders like ${firstname} and ${lastname}
+    from a template with values provided at runtime.
+  
+  * The system attempts to send a template with some variables not populated
+    will raise an error.
+  
+  * The system silently ignores values for variables that aren’t found from the
+    template.
+  
+  * The system supports the full Latin-1 character set in templates.
+  
+  * The system supports the full Latin-1 character set in variable values.
+
+2. decompose the requirements on tasks (card)
+
+  - task: Write a regular expression for identifying variables from the template.
+ 
+  - task: Implement a template parser that uses the regular expression.
+  
+  - task: Implement a template engine that provides a public API and uses the 
+          template parser internally.
+  
+
+3. decompose tasks into tests (card) (remember deleting redundant tests)
+  - test: Template without any variables renders as is.
+
+  - test: Template with one variable is rendered with the variable replaced with 
+          its value.
+
+  - test: Template with multiple variables is rendered with the appropriate 
+          placeholders replaced by the associated values.
+ 
+ 
+4. implement a test selection strategy, you you start working on your firts test
