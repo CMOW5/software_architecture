@@ -1,0 +1,130 @@
+
+1. Intro to user stories
+
+  User stories are an extremely simple way to express requirements. In its classic
+  form, a user story is a short sentence stating who does what and why. In practice,
+  most stories just tell us who and what, with the underlying motivation considered
+  apparent from the context. The reason a story is typically only one sentence long
+  (or, in some cases, just one or two words that convey meaning to the customer and
+  developers) is that the story is not intended to document the requirement. The
+  story is intended to represent the requirement, acting as a promise of a future conversa-
+  tion between the customer and the developer.
+
+  - format of a story
+
+  A number of people have suggested writing user stories that follow an agreed for-
+  mat such as “As a (role) I want (functionality) so that (benefit).” However, I and a
+  number of other proponents of user stories for requirements management rec-
+  ommend not fixing the format as such but focusing on the user story staying on a
+  level of detail that makes sense, using terms that make sense to the customer.
+
+  the format of a user story doesn’t matter all that much
+  as long as it communicates the necessary information—who, what, why—to all
+  involved parties, either explicitly or implicitly.
+
+  - examples of user stories
+
+    * “Support technician sees customer’s history onscreen at the start of a call”
+    * “The system prevents user from running multiple instances of the 
+      application simultaneously”
+    * “Application authenticates with the HTTP proxy server”
+
+    These user stories express just enough for the customer to be able to 
+    prioritize the feature in relation to other features and for the developer 
+    to be able to come up with a rough effort estimate for the story.
+
+    They convey what provides value to the customer—not how the system should 
+    provide that value.
+
+
+2. Acceptance tests
+
+  Acceptance tests are specifications for the desired behavior and functionality of a
+  system. They tell us, for a given user story, how the system handles certain condi-
+  tions and inputs and with what kinds of outcomes.
+
+  - example tests for a story
+
+    “Support technician sees customer’s history onscreen at the start of a call”
+
+    tests for the given story 
+
+    - simulate a call with fred's account number and verify that fred's info
+      can be read from the screen 
+
+    - verify that the system displays a valid error message for a non existent
+      account number
+    
+    - omit the account number in the incoming call completely and verify that
+      the system displays the text "no account number provided" on the system
+
+    These three tests would essentially tell us whether the system behaves correctly
+    from the perspective of a user—conditions of satisfaction. They tell us nothing
+    about how the system implements that behavior.
+
+  - properties of acceptance tests
+
+    So far, you’ve probably deduced that acceptance tests are typically short and some-
+    what informal. There’s more to the nature of acceptance tests, however, and next
+    we’re going to look at some general properties.
+
+    - Owned by the customer:
+
+      Acceptance tests should be owned by the customer because their main purpose is
+      to specify acceptance criteria for the user story, and it’s the customer—the business
+      expert—who is best positioned to spell out those criteria.
+
+      Having the customer write the acceptance tests helps us avoid a common prob-
+      lem with acceptance tests written by developers: Developers often fall into the pit
+      of specifying technical aspects of the implementation rather than specifying the
+      feature itself.
+
+    - Written together with the customer, developer, and tester.
+
+      Even though the customer should be the one who owns the acceptance tests, they
+      don’t need to be the only one to write them. Especially when we’re new to user sto-
+      ries and acceptance tests, it is important to provide help and support so that
+      nobody ends up isolating themselves from the process due to lack of understanding
+      and, thus, being uncomfortable with the tools and techniques.
+
+    - Focus on the what, not the how
+
+      they focus on describing the source of value to the customer instead of the mechanics 
+      of how that value is delivered.
+
+      User stories strive to convey the needs and wants—the what and why—and give the 
+      implementation—the how—little attention.
+
+    - Expressed in the language of the problem domain.
+
+      An important property of acceptance tests is that they use the language of the
+      domain and the customer instead of geek-speak only the programmer under-
+      stands
+
+      Scattering too much technical lingo into
+      our tests makes us more vulnerable to having a requirement bug sneak into a pro-
+      duction release—because the customer’s eyes glaze over when reading geek-speak
+      and the developers are drawn to the technology rather than the real issue of spec-
+      ifying the right thing.
+
+      By using a domain language in specifying our tests, we are also not 
+      unnecessarily tied to the implementation.
+
+    - Concise, precise, and unambiguous
+
+      we want to keep our tests simple and concise.
+
+      We keep our tests uncluttered, easy to understand, and easy to translate to
+      executable tests. The less ambiguity involved, the better we are at avoiding mis-
+      takes and the working with our tests.
+
+      the goal is to provide just enough information for us to
+      remember the important things we need to discuss and test for, rather than docu-
+      menting those details beforehand. Card, conversation, confirmation—these are
+      the three Cs that make up a user story.
+
+      keep your acceptance tests simple and concise,
+      and as long as you avoid writing down ambiguous things that can be interpreted
+      wrongly at a later stage. Specifically, avoid writing down details that are easy to
+      find out later and that don’t add crucial information for estimating the size of
+      the story.
