@@ -1,0 +1,106 @@
+OCP: The Open-Closed Principle
+
+When a single change to a program results in a cascade of changes to dependent modules, 
+the design smells of Rigidity. The OCP advises us to refactor the system so that further 
+changes of that kind will not cause more modifications.
+
+If the OCP is applied well, then further changes of that kind are achieved by adding new code, 
+not by changing old code that already works.
+
+Modules that conform to the Open-Closed Principle have two primary attributes. They are
+
+1. "Open for extension."
+  This means that the behavior of the module can be extended. As the requirements of the 
+  application change, we are able to extend the module with new behaviors that satisfy those 
+  changes. In other words, we are able to change what the module does.
+
+2. "Closed for modification."
+  Extending the behavior of a module does not result in changes to the source or binary 
+  code of the module. The binary executable version of the module, whether in a linkable 
+  library, a DLL, or a Java . j ar, remains untouched.
+
+How is it possible that the behaviors of a module can be modified without changing its 
+source code? How can we change what a module does, without changing the module?
+
+answer: Abstraction Is the Key
+
+The abstractions are abstract base classes, and the unbounded group of
+possible behaviors is represented by all the possible derivative classes.
+
+It is possible for a module to manipulate an abstraction. Such a module can be closed for 
+modification since it depends upon an abstraction that is fixed. Yet the behavior of that 
+module can be extended by creating new derivatives of the abstraction.
+
+abstract classes are more closely associated to their clients than to the classes that 
+implement them.
+
+There are two patterns that are the most common ways of satisfying the OCR.
+They represent a  clear separation of generic functionality from the detailed 
+implementation of that  functionality.
+
+ - The Strategy pattern.
+ - The template method pattern.
+
+In general, no matter how "closed" a module is, there will always be some kind of change 
+against which it is not closed. There is no model that is natural to all contexts! Since closure
+cannot be complete, it must be strategic. That is, the designer must choose the kinds of changes 
+against which to close his design. He must guess at the most likely kinds of changes, 
+and then construct abstractions to protect him from those changes.
+
+example => 
+
+  class Shape
+  {
+    public:
+      virtual void Draw() const = 0;
+  };
+
+  class Square : public Shape
+  {
+    public:
+      virtual void Draw() const;
+  };
+
+  class Circle : public Shape
+  {
+    public: 
+      virtual void Draw() const;
+  };
+
+  void DrawAllShapes(vector<Shape*>& list)
+  {
+    vector<Shape*>::iterator i;
+    for (i=list.begin(); i != list.end(); i++)
+      (*i)->Draw();
+  }
+
+conforming to the OCP is expensive. It takes development time and effort to create the 
+appropriate abstractions. Those abstractions also increase the complexity of the software
+design. There is a limit to the amount of abstraction that the developers can afford. 
+Clearly, we want to limit the application of the OCP to changes that are likely
+
+How do we know which changes are likely? We do the appropriate research, we ask the 
+appropriate  questions, and we use our experience and common sense. And after all that, 
+we wait until the changes happen!
+
+means we initially write our code expecting it not to change. When a
+change occurs, we implement the abstractions that protect us from future changes of that kind.
+
+- Stimulating change
+
+  We want to know what kinds of changes are likely before we are very far down the 
+  development path. The longer we wait to find out what kinds of changes are likely, 
+  the harder it will be to create the appropriate abstractions.
+
+  • We write tests first. Testing is one kind of usage of the system. By writing tests 
+    first we force the system to be testable. Therefore changes in testability will not 
+    surprise us later. We will have built the abstractions that make the system testable. 
+    We are likely to find that many of these abstractions will protect us from other 
+    kinds of changes later.
+  • We develop using very short cycles—days instead of weeks.
+  • We develop features before infrastructure and frequently show those features to stakeholders.
+  • We develop the most important features first.
+  • We release the software early and often. We get it in front of our customers and 
+    users as quickly and as often as possible.
+
+remember: resisting premature abstraction is as important as abstraction itself.

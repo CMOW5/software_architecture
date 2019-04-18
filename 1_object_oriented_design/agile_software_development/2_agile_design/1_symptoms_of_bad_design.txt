@@ -1,0 +1,41 @@
+If agility is about building software in tiny increments, how can you ever design the software? 
+How can you take the time to ensure that the software has a good structure that is flexible, 
+maintainable, and reusable? If you build in tiny increments, aren't you really setting the 
+stage for lots of scrap and rework in the name of refactoring? Aren't you going to miss the 
+big picture?
+
+In an agile team, the big picture evolves along with the software. With each iteration, 
+the team improves the design of the system so that it is as good as it can be for the system 
+as it is now. The team does not spend very much time looking ahead to future requirements and 
+needs. Nor do they try to build in today the infrastructure to support the features they 
+think they'll need tomorrow. Rather, they focus on the current structure of the system,
+making it as good as it can be.
+
+- Symptoms of Poor Design
+
+  1. Rigidity—The design is hard to change.
+  2. Fragility—The design is easy to break.
+  3. Immobility—The design is hard to reuse.
+  4. Viscosity—It is hard to do the right thing.
+  5. Needless Complexity—Overdesign.
+  6. Needless Repetition—Mouse abuse.
+  7. Opacity—Disorganized expression.
+
+  They are smells that pervade the overall structure of the software rather than a 
+  small section of code.
+
+- Principles
+
+  1. SRP—The Single Responsibility Principle
+  2. OCP—The Open-Closed Principle.
+  3. LSP—The Liskov Substitution Principle.
+  4. DIP—The Dependency Inversion Principle.
+  5. ISP—The Interface Segregation Principle.
+
+Often, the smell is caused by the violation of one or more of the principles. 
+For example, the smell of Rigidity is often a result of insufficient attention to 
+The Open-Closed Principle (OCP). 
+Agile teams apply principles to remove smells. They don't apply principles when there are 
+no smells. mistake to unconditionally conform to a principle just because it is a principle. Principles are not a perfume to be
+liberally scattered all over the system. Overconformance to the principles leads to the design 
+smell of Needless Complexity.

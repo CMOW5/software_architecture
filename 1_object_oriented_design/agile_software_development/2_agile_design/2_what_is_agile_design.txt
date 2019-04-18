@@ -1,0 +1,66 @@
+So, what is agile design? Agile design is a process, not an event. 
+It's the continous application of principles, 
+patterns, and practices to improve the structure and readability of the software. 
+It is the dedication to keeping the design of the system as simple, clean, 
+and expressive as possible at all times.
+
+The design of a software system is documented primarily by its source code.
+
+You should not take that design is to mean a set of UML diagrams separate from the code. 
+A set of UML diagrams may represent parts of a design, but it is not the design. 
+The design of a software project is an abstract concept.  
+It has to do with the overall shape and structure of the program as well as the detailed 
+shape and structure of each module, class, and method.
+
+- Design smells
+
+  1. Rigidity—The system is hard to change because every change forces many other changes to 
+    other parts of the system.
+  2. Fragility—Changes cause the system to break in places that have no conceptual relationship
+    to the part that was changed.
+  3. Immobility—It is hard to disentangle the system into components that can be reused in 
+    other systems.
+  4. Viscosity—Doing things right is harder than doing things wrong.
+  5. Needless Complexity—The design contains infrastructure that adds no direct benefit.
+  6. Needless Repetition—The design contains repeating structures that could be unified 
+    under a single abstraction.
+  7. Opacity—It is hard to read and understand. It does not express its intent well.
+
+
+- Agile Teams Don't Allow the Software to Rot
+
+We cannot blame the drifting of the requirements for the degradation of the design. We, as 
+software developers, know full well that requirements change. Indeed, most of us realize 
+that the requirements are the most volatile elements in the project. If our designs are 
+failing due to the constant rain of changing requirements, it is our designs and practices 
+that are at fault.
+
+An agile team thrives on change. The team invests little up front; therefore, it is not 
+vested in an aging initial design. Rather, they keep the design of the system as clean and 
+simple as possible, and back it up with lots of unit tests and acceptance tests. 
+This keeps the design flexible and easy to change. The team takes advantage of that 
+flexibility in order to continuously improve the design so that each iteration ends 
+with a system whose design is as appropriate as it can be for the requirements 
+in that iteration.
+
+we, as developers, must accept! We live in a world of changing requirements; 
+and our job is to make sure that our software can survive those changes. 
+If the design of our software degrades because the requirements have changed, 
+then we are not being agile.
+
+Instead of trying to patch the design to make the new requirement work, 
+the team siezes the opportunity to improve the design so that it will be resilient 
+to that kind of change in the future.
+
+thats why you should
+
+1. detecte the problem by following agile practices;
+2. diagnose the problem by applying design principles; and
+3. solve the problem by applying the appropriate design pattern.
+
+- Keeping the Design As Good As It Can Be
+
+Agile developers are dedicated to keeping the design as appropriate and clean as possible. This is not a haphazard
+or tentative commitment. Agile developers do not "clean up" the design every few weeks. Rather, they keep the
+software as clean, simple, and expressive as they possibly can, every day, every hour, and even every minute. They
+never say, "We'll go back and fix that later." They never let the rot begin.

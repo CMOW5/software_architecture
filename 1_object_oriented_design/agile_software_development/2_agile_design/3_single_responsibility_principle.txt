@@ -1,0 +1,28 @@
+Cohesion: isn as the functional relatedness of the elements of a module.
+
+In this chapter we'll shift that meaning a bit and relate cohesion to the forces 
+that cause a module, or a class, to change.
+
+- SRP: The Single-Responsibility Principle
+
+Why was it important to separate the responsibilities into separate classes? 
+Because each  responsibility is an axis of change. When the requirements change,
+that change will be manifest through a change in responsibility amongst the classes. 
+If a class assumes more than one responsibility, then there will be more than one reason
+for it to change.
+
+If a class has more than one responsibility, then the responsibilities become coupled. 
+Changes to one  responsibility may impair or inhibit the ability of the class to meet 
+the others. This kind of coupling leads to fragile designs that break in unexpected 
+ways when changed.
+
+What Is a Responsibility?
+
+In the context of the SRP, we define a responsibility to be "a reason for change." 
+If you can think of more than one motive for changing a class, 
+then that class has more than one responsibility. This is sometimes hard to see. We are
+accustomed to thinking of responsibility in groups.
+
+An axis of change is an axis of change only if the changes actually occur. 
+It is not wise to apply the SRP, or any other principle for that matter, 
+if there is no symptom.
