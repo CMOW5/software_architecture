@@ -1,0 +1,17 @@
+At the start of the project, the developers and customers try to identify all the really significant user stories they
+can. However, they don't try to identify all user stories. As the project proceeds, the customers will continue to
+write new user stories. The flow of user stories will not shut off until the project is over.
+
+Spiking, Splitting, and Velocity:
+
+  Stories that are too large or too small are hard to estimate. Developers tend to underestimate large stories and 
+  overestimate small ones. Any story that is too big should be split into pieces that aren't too big. Any story that is too
+  small should be merged with other small stories.
+  For example, consider the story, "Users can securely transfer money into, out of, and between their
+  accounts." This is a big story. Estimating will be hard and probably inaccurate. However, we can split it as follow,
+  into many stories that are much easier to estimate:
+• Users can log in.
+• Users can log out.
+• Users can deposit money into their account.
+• Users can withdraw money from their account.
+• Users can transfer money from their account to another account.

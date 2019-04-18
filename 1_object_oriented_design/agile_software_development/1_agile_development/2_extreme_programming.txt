@@ -1,0 +1,118 @@
+The practices of extreme programming
+
+1. the customer team member
+
+2. user stories
+
+  In order to plan a project, we must know something about the requirements, but we don't need to know very much.
+  For planning purposes, we only need to know enough about a requirement to estimate it. You may think that in
+  order to estimate a requirement you need to know all its details, but that's not quite true. You have to know that
+  there are details, and you have to know roughly the kinds of details there are, but you don't have to know the
+  specifics.
+
+3. short cycles
+
+  - iteration plan (usually two weeks in lenght): it represents a minor delivery
+    that might or might not be put into production.
+
+    it is a collection of user stories selected by the customer according to a budget
+    established by the developers.
+
+    Once an iteration has been started, the customer agrees not to change the definition or priority of the stories
+    in that iteration.
+
+  - the release plan:
+
+    XP teams often create a release plan that maps out the next six iterations or so. That
+    plan is known as a release plan. A release is usually three months worth of work. It represents a major delivery that
+    can usually be put into production.
+
+    A release plan consists of prioritized collections of user stories that have been
+    selected by the customer according to a budget given by the developers.
+
+4. Acceptance tests
+
+  The details about the user stories are captured in the form of acceptance tests specified 
+  by the customer. The  acceptance tests for a story are written immediately preceding, 
+  or even concurrent with, the implementation of that story.
+
+  Once an acceptance test passes, it is added to the body of passing acceptance tests 
+  and is never allowed to fail again.
+
+5. Pair programming
+
+6. Test-driven development
+
+  All production code is written in order to make failing unit tests pass. First we write a unit test that fails
+  because the functionality for which it is testing doesn't exist. Then we write the code that makes that test pass.
+
+7. collective ownership
+
+  A pair has the right to check out any module and improve it. No programmers are individually responsible for any
+  one particular module or technology. This doesn't mean that XP denies specialties.
+
+8. Continuous integrations
+
+  The programmers check in their code and integrate several times per day. The rule is simple. The first one to check
+  in wins, everybody else merges.
+
+  If there is a merge to
+  do, they do it. If necessary, they consult with the programmers who beat them to the check in.
+  Once their changes are integrated, they build the new system. They run every test in the 
+  system, including all currently running acceptance tests. If they broke anything that used 
+  to work, they fix it. Once all the tests run, they finish the check in.
+
+  XP teams will build the system many times each day. 
+  They build the whole system from end to end.
+
+9. Sustainable Pace
+
+  a team is not allowed to work overtime. The only exception to that rule is the last week in
+  a release. If the team is within striking distance of its release goal and can sprint to the finish, then overtime is 
+  permissible.
+
+
+10. Open Workspace
+
+11. Planing game
+
+  The essence of the planning game is the division of 
+  responsibility between business and development. The business people (a.k.a.
+  the customers) decide how important a feature is, and the developers
+  decide how much that feature will cost to implement.
+
+12. simple design 
+
+  An XP team makes their designs as simple and expressive as they can be. Furthermore, 
+  they narrow their focus to consider only the stories that are planned for the current 
+  iteration. They don't worry about stories to come.
+
+  The team will only add the infrastructure when a story comes along that
+  forces them to do so.
+
+13. Consider the Simplest Thing That Could Possibly Work,
+
+14. You Aren't Going to Need It:
+
+  The team puts
+  in the infrastructure, only if they have proof, or at least very compelling evidence, 
+  that putting in the infrastructure now will be more cost effective than waiting.
+
+15. Once and Only Once,
+
+  XPers don't tolerate code duplication. Wherever they find it, they eliminate it.
+  see (template method)
+
+16. refactoring
+
+  Refactoring is done continuously rather than at the end of the project, the end of the release, the end of the
+  iteration, or even the end of the day. Refactoring is something we do every hour or every half hour. Through 
+  refactoring, we continuously keep the code as clean, simple, and expressive as possible.
+
+17. the metaphor
+
+  consider your system as a big metaphor
+  
+  example => - zuul the gatekeeper
+             - the toaster
+             etc

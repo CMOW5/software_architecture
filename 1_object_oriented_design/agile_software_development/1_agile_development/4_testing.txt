@@ -1,0 +1,38 @@
+TDD
+
+- test isolation (unit testing) : decouple with interfaces
+
+  unit tests serve as compileable and executable documentation for the internals 
+  of the system, 
+
+  the act of writing the test first forces us into a different
+  point of view. We must view the program we are about to write from the vantage point of a 
+  caller of that program. Thus, we are immediately concerned with the interface of the program 
+  as well as its function. By writing the test first, we design the software to be conveniently 
+  callable. What's more, by writing the test first, we force ourselves to design the 
+  program to be testable.
+
+  Another important effect of writing tests first is that the tests act as an invaluable 
+  form of documentation. If you want to know how to call a function or create an object, 
+  there is a test that shows you.
+
+- acceptance tests:
+
+  Acceptance tests are written by folks who do not know the internal
+  mechanisms of the system. They may be written directly by the customer
+  or by some technical people attached to the customer, possibly QA. 
+  Acceptance tests are programs and are therefore executable. However, they are
+  usually written in a special scripting language created for customers of the
+  application.
+
+  Acceptance tests are the ultimate documentation of a feature. Once
+  the customer has written the acceptance tests, which verify that a feature is
+  correct, the programmers can read those acceptance tests to truly understand the feature.
+
+  acceptance tests serve as compileable and executable documentation of the 
+  features of the system.
+
+  Furthermore, the act of writing acceptance tests first has a profound effect upon the architecture of the 
+  system. In order to make the system testable, it has to be decoupled at the high architecture level. For example, the
+  user interface (UI) has to be decoupled from the business rules in such a way that the acceptance tests can gain
+  access to those business rules without going through the UI.

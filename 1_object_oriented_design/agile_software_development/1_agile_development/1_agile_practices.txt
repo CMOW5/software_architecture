@@ -1,0 +1,94 @@
+* Individuals and interactions over processes and tools:
+
+  A good process will not save the project from failure if the team doesn't have strong players, but a bad 
+  process can make even the strongest of players ineffective. Even a group of strong players can fail badly if they don't
+  work as a team.
+
+  Working well with others, communicating and interacting, is more 
+  important than raw programming talent. A team of average programmers who communicate 
+  well are more likely to succeed than a group of superstars who fail to interact as a team.
+
+  An overabundance of big, unwieldy tools is just as bad as a lack of tools. so start
+  small.
+  (Compilers, IDEs, source-code control systems, etc)
+
+  My advice is to start small. Don't assume you've outgrown a tool until you've tried it 
+  and found you can't use it. Instead of buying the top-of-the-line, megaexpensive, 
+  source-code control system, find a free one and use it
+
+  until you can demonstrate that you've outgrown it. Before you buy team licenses for the 
+  best of all CASE tools, use white boards and graph paper until you can reasonably show 
+  that you need more. Before you commit to the top-shelf behemoth database system, 
+  try flat files. Don't assume that bigger and better tools will automatically help 
+  you do better. Often they hinder more than they help.
+
+  Remember, building the team is more important than building the environment. 
+  Many teams and managers make the mistake of building the environment first and 
+  expecting the team to gel automatically. Instead, work to create the team, 
+  and then let the team configure the environment on the basis of need.
+
+* Working software over comprehensive documentation:
+
+  Software without documentation is a disaster. Rather, the team needs to
+  produce human-readable documents that describe the system and the rationale 
+  for their design decisions.
+
+  However, too much documentation is worse than too little. Huge software documents take 
+  a great deal of time to produce and even more time to keep in sync with the code. 
+  If they are not kept in sync, then they turn into large, complicated lies and become 
+  a significant source of misdirection.
+
+  It is always a good idea for the team to write and maintain a rationale and structure document, 
+  but that document needs to be short and salient. By "short," I mean one or two dozen pages at
+  most. By "salient," I mean it should discuss the overall design rationale and only the 
+  highest-level structures in the system.
+
+  The two documents that are the best at transferring information to new team members are the code and the
+  team. The code does not lie about what it does. It may be hard to extract rationale and intent from the code, but
+  the code is the only unambiguous source of information. The team members hold the ever-changing road map of
+  the system in their heads. There is no faster and more efficient way to transfer that road map to others than human-
+  to-human interaction.
+
+  Produce no document unless its need is immediate and significant.
+
+
+* Customer collaboration over contract negotiation
+
+  It is tempting for the managers of a company to tell their development staff what their 
+  needs are, and then expect that staff to go away for a while and return with a system 
+  that satisfies those needs. However, this mode of operation leads to poor quality and failure.
+  Successful projects involve customer feedback on a regular and frequent basis. 
+  Rather than depending on a contract or a statement of work, the customer of the software 
+  works closely with the development team, providing frequent feedback on their efforts.
+
+  As an example of a successful contract, During the course of this project, we worked very 
+  closely with the customer. We released the software to him almost every Friday. 
+  By Monday or Tuesday of the following week, he would have a list of changes for us to put 
+  into the software. We would prioritize those changes together and then schedule them into 
+  subsequent weeks. The customer worked so closely with us that acceptance tests 
+  were never an issue. He knew when a block of 
+  functionality satisfied his needs because he watched it evolve from week to week.
+
+  The requirements for this project were in a constant state of flux. 
+  Major changes were not uncommon.
+
+  The key to this success was the intense collaboration with the customer and a contract 
+  that governed that collaboration rather than trying to specify the details of scope and 
+  schedule for a fixed cost.
+
+* Responding to change over following a plan
+
+  When we build plans, we need to make sure that our plans are flexible and ready to adapt 
+  to changes in the business and technology.
+
+  First of all, the business environment is likely to change, causing the requirements to shift. 
+  Second, customers are likely to alter the requirements once they see the system start to 
+  function. Finally, even if we know the requirements,
+  even if we know the requirements, and we are sure they won't
+  change, we are not very good at estimating how long it will take to develop them.
+
+  A better planning strategy is to make detailed plans for the next two weeks, 
+  very rough plans for the next three months, and extremely crude plans beyond that. 
+  We should know the tasks we will be working on for the next two weeks. 
+  We should roughly know the requirements we will be working on for the next three months. 
+  And we should have only a vague idea what the system will do after a year.
