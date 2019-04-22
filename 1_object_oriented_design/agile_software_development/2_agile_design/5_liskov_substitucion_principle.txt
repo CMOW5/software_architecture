@@ -1,0 +1,142 @@
+What are the design rules that govern this particular use of inheritance? 
+What are the characteristics of the best inheritance hierarchies? What are the traps 
+that will cause us to create hierarchies that do not conform to the
+OCP? These are the questions that are addressed by the Liskov Substitution Principle (LSP).
+
+LSP: The Liskov Substitution Principle
+
+The LSP can be paraphrased as follows:
+ - Subtypes must be substitutable for their base types.
+
+What is wanted here is something like the following substitution property: 
+If for each object o1 of type S there is an object o2 of type T such that for all 
+programs P defined in terms of T, the behavior of P is unchanged when o1 
+is substituted for o2 then S is a subtype of T.
+
+The importance of this principle becomes obvious when you consider the consequences of 
+violating it. 
+Presume that we have a function /that takes, as its argument, a pointer or reference 
+to some base class B. Presume also that there is some derivative D of B which, 
+when passed to/in the guise of B, causes/to misbehave. Then D violates the LSP. 
+Clearly D is Fragile in the presence off. The authors of/will be tempted to put in some kind 
+of test for D so that/can behave properly when a D is passed to it. 
+This test violates the OCP because now/is not closed to all the various derivatives of B. 
+Such tests are a code smell that are the result of inexperienced developers 
+(or, what's worse, developers in a hurry) reacting to LSP violations.
+
+a violation of LSP is a latent violation of OCP.
+
+A Simple Example of a Violation of the LSP
+  Violating the LSP often results in the use of Run-Time Type Information (RTTI) in a 
+  manner that grossly violates the OCP. Frequently, an explicit if statement or if/else 
+  chain is used to determine the type of an object so that the behavior appropriate to that 
+  type can be selected.
+
+When the creation of a derived class causes us to make changes to the base
+class, it often implies that the design is faulty. (violation of OCP)
+
+- Validity Is Not Intrinsic
+
+  A model, viewed in isolation, cannot be meaningfully validated. 
+  The validity of a model can only be expressed in terms of its clients.
+
+  When considering whether a particular design is appropriate or not, one 
+  cannot simply view the solution in isolation. One must view it in terms of the 
+  reasonable assumptions made by the users of that design.
+  Who knows what reasonable assumptions the users of a design are going to
+  make? Most such assumptions are not easy to anticipate. Indeed, if we tried to
+  anticipate them all, we'd likely wind up imbuing our system with the smell of Needless 
+  Complexity. Therefore, like all other principles, it is often best to defer all but 
+  the most obvious LSP violations until the related Fragility has been smelled.
+
+- IS-A Is about Behavior
+
+  it is behavior that software is really all about. The LSP makes it clear that in OOD, 
+  the IS-A relationship pertains to behavior that can be reasonably assumed and that 
+  clients depend on.
+
+- Design by contract 
+
+  How do you know what your clients will really expect? There is a technique for making those 
+  reasonable assumptions explicit, thereby enforcing the LSP. The technique is called design 
+  by contract (DBC)
+
+  Using DBC, the author of a class explicitly states the contract for that class. 
+  The contract informs the author of any client code about the behaviors that can be relied on.
+  The contract is specified by declaring preconditions and postconditions for each method. 
+  The preconditions must be true in order for the method to execute. On completion, 
+  the method guarantees that the postconditions are true.
+
+   - A routine redeclaration [in a derivative] may only replace the original precondition 
+     by one equal or weaker, and the original postcondition by one equal or stronger.
+
+    In other words, when using an object through its base-class interface, the user knows 
+    only the preconditions and postconditions of the base class. Thus, derived objects must 
+    not expect such users to obey preconditions that are stronger than those required by 
+    the base class. That is, they must accept anything that the base class could accept. 
+    Also, derived classes must conform to all the postconditions of the base. 
+    That is, their behaviors and  outputs must not violate any of the constraints 
+    established for the base class. Users of the base class must not be 
+    confused by the output of the derived class.
+
+    One of the bests ways to specify contracts is with unit tests.
+
+- Factoring instead of deriving 
+
+  Another interesting and puzzling case of inheritance is the case of the Line 
+  and the LineSegment.
+
+  These two classes appear, at first, to be natural candidates for public inheritance.
+  LineSegment needs every member variable and every member function declared in Line. 
+  Moreover, LineSegment adds a new member function of its own, GetLength, and overrides 
+  the meaning of the IsOn function. Yet these two classes violate the LSP in a subtle way.
+
+  In the case of the Line and LineSegment, there is a simple solution that illustrates an 
+  important tool of OOD. If we have access to both the Line and LineSegment classes, 
+  then we can factor the common elements of both into an abstract base class called LinearObject.
+
+  Factoring is a design tool that is best applied before there is much code written. 
+  When factoring is possible, however, it is a powerful tool. 
+  If qualities can be factored out of two subclasses, there is the distinct possibility 
+  that other classes will show up later that need those qualities, too.
+
+  We can state that if a set of classes all support a common responsibility, 
+  they should inherit that responsibility from a common superclass.
+  If a common superclass does not already exist, create one, and move the common 
+  responsibilities to it. After all, such a class is demonstrably useful—you have already 
+  shown that the responsibilities will be inherited by some classes. Isn't it conceivable 
+  that a later extension of your system might add a new subclass that will support those 
+  same responsibilities in a new way? This new superclass will probably be an abstract class.
+
+- Heuristics and Conventions
+  
+  There are some simple heuristics that can give you some clues about LSP violations. 
+  They all have to do with derivative classes that somehow remove functionality from their 
+  base classes. A derivative that does less than its base is usually not substitutable 
+  for that base, and therefore violates the LSP.
+
+  - Degenerate Functions in Derivatives
+    Consider the following code. The f function in Base is implemented. However, 
+    in Derived it is degenerate. Presumably, the author of Derived found that function 
+    f had no useful purpose in a Derived. Unfortunately, the users of Base don't know that 
+    they shouldn't call f, so there is a substitution violation.
+  
+    public class Base
+    {
+      public void f() {/*some code*/}
+    }
+    
+    public class Derived extends Base
+    {
+      public void f() {}
+    }
+
+    The presence of degenerate functions in derivatives is not always indicative of an LSP 
+    violation, but it's worth looking at them when they occur.
+
+  - throwing exceptions from derivatives
+
+    Another form of violation is the addition of exceptions to methods of derived classes 
+    whose bases don't throw them. If the users of the base classes don't expect exceptions, 
+    then adding them to the methods of derivatives is not substitutable. Either the expectations
+    of the users must be altered or the derived classes should not throw the exceptions.
