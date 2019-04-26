@@ -1,0 +1,76 @@
+DIP: The Dependency-Inversion Principle
+
+a. High-level modules should not depend on low-level modules. Both should depend on abstractions.
+b. Abstractions should not depend on details. Details should depend on abstractions.
+
+The dependency structure of a well-designed, object-oriented program is "inverted" 
+with respect to the dependency structure that normally results from traditional procedural
+methods.
+
+Consider the implications of high-level modules that depend on low-level modules.
+It is the high-level modules that contain the important policy decisions and business 
+models of an application. These modules contain the identity of the application. 
+Yet, when these modules depend on the lower level modules, changes to the lower level 
+modules can have direct effects on the higher level modules and can force them to change
+in turn.
+
+This predicament is absurd! It is the high-level, policy-setting modules that ought to be 
+influencing the low level, detailed modules. The modules that contain the high-level 
+business rules should take precedence over, and be independent of, the modules that 
+contain the implementation details. High-level modules simply should not depend on 
+low-level modules in any way.
+
+When high-level modules depend on low-level modules, it becomes very difficult to reuse 
+those high-level modules in different contexts. However, when the high-level modules are 
+independent of the low-level modules, then the high-level modules can be reused quite simply.
+This principle is at the very heart of framework design.
+
+- Layering:
+
+  In a conventional layer system the dependencies are transitive
+
+  Policy layer -> Mechanism layer -> Utility layer
+
+  the high-level Policy layer uses a lower-level Mechanism layer, which in turn uses a 
+  detailed-level utility layer. While this may look appropriate, it has the insidious 
+  characteristic that the Policy layer is sensitive to changes all the way down in the utility 
+  layer.
+
+- Depend on abstractions:
+
+  A somewhat more naive, yet still very powerful, interpretation of the DIP is the simple 
+  heuristic: "Depend on abstractions." Simply stated, this heuristic recommends that you 
+  should not depend on a concrete class—that all relationships in a program should terminate 
+  on an abstract class or an interface.
+  
+  According to this heuristic,
+  • No variable should hold a pointer or reference to a concrete class.
+  • No class should derive from a concrete class.
+  • No method should override an implemented method of any of its base classes.
+
+  Certainly this heuristic is usually violated at least once in every program. Somebody has to create the
+  instances of the concrete classes, and whatever module does that will depend on them.3 Moreover, there seems no
+  reason to follow this heuristic for classes that are concrete but nonvolatile. If a concrete class is not going to
+  change very much, and no other similar derivatives are going to be created, then it does very little harm to depend
+  on it.
+
+  Most concrete classes that we write as part of an application program are volatile. 
+  It is those concrete classes that we do not want to depend directly on. 
+  Their volatility can be isolated by keeping them behind an abstract interface.
+
+  This is not a complete solution. There are times when the interface of a volatile class 
+  must change, and this change must be propagated to the abstract interface that represents 
+  the class. Such changes break through the isolation of the abstract interface.
+  This is the reason that the heuristic is a bit naive. If, on the other hand, we take the 
+  longer view that the client classes declare the service interfaces that they need, then 
+  the only time the interface will change is when the client needs the change. 
+  Changes to the classes that implement the abstract interface will not affect the client.
+
+- finding the underlying abstraction 
+
+  What is the high-level policy? It is the abstraction that underlies the application, 
+  the truths that do not vary when the details are changed. It is the system inside the 
+  system—it is the metaphor. In the Button/Lamp example, the underlying abstraction is to 
+  detect an on/off gesture from a user and relay that gesture to a target object. What
+  mechanism is used to detect the user gesture? Irrelevant! What is the target object? 
+  Irrelevant! These are details that do not impact the abstraction.
