@@ -1,0 +1,47 @@
+ISP: The Interface-Segregation Principle:
+  Clients should not be forced to depend on methods that they do not use.
+
+  When clients are forced to depend on methods that they don't use, then those clients are 
+  subject to changes to those methods. This results in an inadvertent coupling between all 
+  the clients.
+
+This principle deals with the disadvantages of "fat" interfaces. Classes that have "fat" 
+interfaces are classes whose interfaces are not cohesive. In other words, the interfaces of 
+the class can be broken up into groups of methods. Each group serves a different set of clients. 
+Thus, some clients use one group of member functions, and other clients use the other groups.
+The ISP acknowledges that there are objects that require noncohesive interfaces; 
+however, it suggests that clients should not know about them as a single class. 
+Instead, clients should know about abstract base classes that have cohesive interfaces.
+
+An interface is polluted when a method that it does not require is provided in the interface. 
+It has been forced to incorporate this method solely for the benefit of one of its subclasses.
+If this practice is pursued, then every time a derivative needs a new method,
+that method will be added to the base class. This will further pollute the interface
+of the base class, making it "fat."
+
+Moreover, each time a new method is added to the base class, that method must be implemented 
+(or allowed to default) in derived classes. Indeed, an associated practice is to add these 
+interfaces to the base class giving them degenerate implementations, specifically so that 
+derived classes are not burdened with the need to implement them. As we learned previously,
+such a practice can violate the LSP, leading to maintenance and reusability problems.
+
+You can do ISP with
+  - separation through delegation: with an adapter
+  - separation through multiple inheritance.
+
+- Grouping Clients: Clients can often be grouped together by the service methods they call. Such 
+  groupings allow segregated interfaces to be created for each group instead of each client. This greatly reduces the 
+  number of interfaces that the service has to implement, and it also prevents the service from depending on each client
+  type.
+  Sometimes, the methods invoked by different groups of clients will overlap. If the overlap is small, then the
+  interfaces for the groups should remain separate. The common functions should be declared in all the overlapping
+  interfaces. The server class will inherit the common functions from each of those interfaces, but it will implement
+  them only once.
+
+- Changing Interfaces. When object-oriented applications are maintained, the interfaces to existing
+  classes and components often change. There are times when these changes have a huge impact and force the
+  recompilation and redeployment of a very large part of the system. This impact can be mitigated by adding new
+  interfaces to existing objects, rather than changing the existing interface. Clients of the old interface that wish to
+  access methods of the new interface can query the object for that interface,
+
+
