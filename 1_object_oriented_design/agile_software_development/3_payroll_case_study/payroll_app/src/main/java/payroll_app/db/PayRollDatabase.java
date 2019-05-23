@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import payroll_app.models.Employee;
+import payroll_app.domain.Employee;
 
 public class PayRollDatabase {
 	

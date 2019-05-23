@@ -5,23 +5,23 @@ package payroll_app;
 
 import org.junit.Test;
 
-import payroll_app.affiliations.UnionAffiliation;
 import payroll_app.db.PayRollDatabase;
-import payroll_app.models.Employee;
-import payroll_app.models.ServiceCharge;
-import payroll_app.payment.PayCheck;
-import payroll_app.payment.classification.HourlyClassification;
-import payroll_app.payment.classification.PaymentClassification;
-import payroll_app.payment.classification.SalariedClassification;
-import payroll_app.payment.classification.TimeCard;
-import payroll_app.payment.method.HoldMethod;
-import payroll_app.payment.schedule.MonthlySchedule;
-import payroll_app.transactions.AddHourlyEmployee;
-import payroll_app.transactions.AddSalariedEmployee;
-import payroll_app.transactions.DeleteEmployeeTransaction;
-import payroll_app.transactions.PayDayTransaction;
-import payroll_app.transactions.ServiceChargeTransaction;
-import payroll_app.transactions.TimeCardTransaction;
+import payroll_app.domain.Employee;
+import payroll_app.domain.PaymentClassification;
+import payroll_app.implementation.HoldMethod;
+import payroll_app.implementation.HourlyClassification;
+import payroll_app.implementation.MonthlySchedule;
+import payroll_app.implementation.PayCheck;
+import payroll_app.implementation.SalariedClassification;
+import payroll_app.implementation.ServiceCharge;
+import payroll_app.implementation.TimeCard;
+import payroll_app.implementation.UnionAffiliation;
+import payroll_app.transactionimplementation.AddHourlyEmployee;
+import payroll_app.transactionimplementation.AddSalariedEmployee;
+import payroll_app.transactionimplementation.DeleteEmployeeTransaction;
+import payroll_app.transactionimplementation.PayDayTransaction;
+import payroll_app.transactionimplementation.ServiceChargeTransaction;
+import payroll_app.transactionimplementation.TimeCardTransaction;
 
 import static org.junit.Assert.*;
 
