@@ -1,0 +1,234 @@
+By grouping classes into packages, we can reason about the design at a higher level of 
+abstraction. We can also use the packages to manage the development and distribution of 
+the software. The goal is to partition the classes in an application according to some
+some criteria, and then allocate the classes in those partitions to packages.
+
+- Granularity: The Principles of Package Cohesion
+
+  The three principles of package cohesion help developers decide how to partition classes 
+  into packages. They depend on the fact that at least some of the classes and their 
+  interrelationships have been discovered. Thus, these principles take a "bottom-up" view of 
+  partitioning.
+
+  1. The Reuse-Release Equivalence Principle (REP) 
+    (The granule of reuse is the granule of release.)
+
+    In order to provide the guarantees that reusers need, authors must organize their 
+    software into reusable packages and then track those packages with release numbers.
+
+    The REP states that the granule of reuse (i.e., a package) can be no smaller than the 
+    granule of release. Anything that we reuse must also be released and tracked. 
+    It is not realistic for a developer to simply write a class and then claim it is reusable. 
+    Reusability comes only after there is a tracking system in place that offers the 
+    guarantees of notification, safety, and support that the potential reusers will need.
+
+    The REP gives us our first hint at how to partition our design into packages. 
+    Since reusability must be based on packages, reusable packages must contain reusable 
+    classes. So, at least some packages should comprise reusable sets of classes.
+
+    Software is created and used by humans. And if software is going to be reused, then it must 
+    be partitioned in a manner that humans find convenient for that purpose.
+
+    If a package contains software that should be reused, then it should not also contain 
+    software that is not designed for reuse. Either all of the classes in a package are 
+    reusable or none of them are.
+
+  2. The Common-Reuse Principle (CRP) 
+    (The classes in a package are reused together If you reuse one of the classes in a package, 
+    you reuse them all.)
+
+    This principle helps us to decide which classes should be placed into a package. 
+    It states that classes that tend to be reused together belong in the same package.
+    In such a package, we would expect to see classes that have lots of dependencies on 
+    each other.
+
+    But the CRP tells us more than just what classes to put together into a package. 
+    It also tells us what classes not to put in the package. When one package uses another, 
+    a dependency is created between the packages. It may be that the using package only uses 
+    one class within the used package. However, that doesn't weaken the dependency at all. 
+    The using package still depends on the used package. Every time the used package 
+    is released, the using package must be revalidated and rereleased. 
+    This is true even if the used package is being released because of changes to a class 
+    that the using package doesn't care about.
+
+    Thus, I want to make sure that when I depend on a package, I depend on every class in 
+    that package. To say this another way, I want to make sure that the classes that I put 
+    into a package are inseparable, that it is impossible to depend on some and not the others. 
+    Otherwise, I will be revalidating and redistributing more than is necessary, and I will 
+    waste significant effort. Therefore, the CRP tells us more about what classes shouldn't be 
+    together than what classes should be together. 
+    The CRP says that classes which are not tightly bound to each other with class 
+    relationships should not be in the same package.
+
+  3. The Common-Closure Principle (CCP)
+    (The classes in a package should be closed together against the same kinds of changes. 
+    A change that affects a package affects all the classes in that package and no other 
+    packages.)
+
+    This is the Single-Responsibility Principle restated for packages. Just as the SRP 
+    says that a class should not contain multiples reasons to change, 
+    this principle says that a package should not have multiple reasons to change.
+
+    In most applications, maintainability is more important that reusability. 
+    If the code in an application must change, you would rather that the changes occur 
+    all in one package, rather than being distributed through many packages. 
+    If changes are focused into a single package, then we need only release the one 
+    changed package. Other packages that don't depend on the changed package do not need 
+    to be revalidated or rereleased.
+
+    The CCP prompts us to gather together in one place all the classes that are likely to 
+    change for the same reasons. If two classes are so tightly bound, either physically or 
+    conceptually, that they always change together, then they belong in the same package.
+
+- Stability: The Principles of Package Coupling
+
+  The next three principles deal with the relationships between packages. Here again, 
+  we will run into the tension between developability and logical design. 
+  The forces that impinge on the architecture of a package structure are technical, political, 
+  and volatile.
+
+  4. The Acyclic-Dependencies Principle (ADP)
+  (Allow no cycles in the package-dependency graph.) 
+
+  "morning-after syndrome": Have you ever worked all day, gotten some stuff working and then 
+  gone home, only to arrive the next morning at to find that your stuff no longer works? 
+  Why doesn't it work? Because somebody stayed later than you and changed something you 
+  depend on!
+
+  The morning-after syndrome occurs in development environments where many developers are 
+  modifying the same source files.
+
+  * Eliminating Dependency Cycles:
+
+    The solution to this problem is to partition the development environment into releasable 
+    packages. The packages become units of work, which can be checked out by a developer or a 
+    team of developers. When developers get a package working, they release it for use by the 
+    other developers. They give it a release number and move it into a directory for other 
+    teams to use. They then continue to modify their package in their own private areas. 
+    Everyone else uses the released version.
+
+    This is a very simple and rational process, and it is widely used. However, to make it 
+    work you must manage the dependency structure of the packages. There can be no cycles. 
+    If there are cycles in the dependency structure, then the morning-after syndrome cannot 
+    be avoided.
+
+  * Breaking the Cycle: 
+
+    It is always possible to break a cycle of packages and reinstate the dependency graph 
+    as a directed acyclic graph (DAG). There are two primary mechanisms.
+
+    1. Apply the Dependency-Inversion Principle (DIP). See Figure 20-3 in the bookd. 
+    we could create an abstract base class that has the interface that MyDialogs needs. 
+    We could then put that abstract base into MyDialogs and inherit it into MyApplication. 
+    This inverts the dependency between MyDialogs and MyApplication, thus breaking the cycle. 
+
+    2. Create a new package on which both MyDialogs and MyApplication depend. 
+    Move the class(es) that they both depend on into that new package. (See Figure 20-4.)
+
+    This solution implies that the package structure is volatile in the presence of 
+    changing requirements. Indeed, as the application grows, the package dependency 
+    structure jitters and grows. Thus, the dependency structure must always be monitored 
+    for cycles. When cycles occur, they must be broken somehow. Sometimes this will
+    mean creating new packages, making the dependency structure grow.
+
+  - Top-Down Design
+
+    The issues we have discussed so far lead to an inescapable conclusion. The package 
+    structure cannot be designed from the top down. This means that it is not one of the 
+    first things about the system that is designed. Indeed, it seems that it evolves as the 
+    system grows and changes.
+
+    But as more and more classes accumulate in the early stages of implementation and design, 
+    there is a growing need to manage the dependencies so that the project can be developed 
+    without the morning-after syndrome. Moreover, we want to keep changes as localized as 
+    possible, so we start paying attention to the SRP and CCP and collocate classes that 
+    are likely to change together.
+
+    As the application continues to grow, we start becoming concerned about creating reusable 
+    elements. Thus, the CRP begins to dictate the composition of the packages. 
+    Finally, as cycles appear, the ADP is applied and the package dependency graph jitters 
+    and grows.
+
+    If we were to try to design the package dependency structure before we had designed any 
+    classes, we would likely fail rather badly. We would not know much about common closure, 
+    we would be unaware of any reusable elements, and we would almost certainly create 
+    packages that produce dependency cycles. Thus, the package dependency structure grows 
+    and evolves with the logical design of the system.
+
+  5. The Stable-Dependencies Principle (SDP)
+  (Depend in the direction of stability.)
+
+  Any package that we expect to be volatile should not be depended on by a package that 
+  is difficult to change!
+  Otherwise the volatile package will also be difficult to change.
+  It is the perversity of software that a module that you have designed to be easy to change 
+  can be made hard to change by someone else simply hanging a dependency on it. 
+  Not a line of source code in your module need change, and yet your module will suddenly 
+  be hard to change. By conforming to the SDP, we ensure that modules that are intended 
+  to be easy to change are not depended on by modules that are harder to change than they are.
+
+    X is a estable package: this package has 3 packages depending on it, so it has 3 
+    reasons not to change (its responsible for those 3 packages), On the other hand, x
+    depends on nothing, so it has no external influence to make it change. 
+    We say it is independent.
+      
+      A  B  C
+      |  |  |
+      |  V  |
+      -> X <-
+
+    Y is a instable package: this package has no other packages depending on it; 
+    we say that it is irresponsible. Y also has three packages that it depends on, 
+    so changes may come from three external sources. We say that Y is dependent.
+      
+       _ Y _      
+      |  |  |
+      |  |  |
+      A  B  C
+    
+
+  - Not All Packages Should Be Stable
+  If all the packages in a system were maximally stable, the system would be unchangeable. 
+  This is not a desirable situation. Indeed, we want to design our package structure so that 
+  some packages are instable and some are stable.
+
+  The changeable packages are on top and depend on the stable package at the bottom. 
+  Putting the instable packages at the top of the diagram is a useful convention since 
+  any arrow that points up is violating the SDP.
+
+  - Where Do We Put the High-level Design?
+    Some software in the system should not change very often. This software represents 
+    the high-level architecture and design decisions. We don't want these architectural 
+    decisions to be volatile. Thus, the software that encapsulates the high-level design of 
+    the system should be placed into stable packages (/ = 0). The instable packages (/ = l)
+    should only contain the software that is likely to change. However, if the high-level 
+    design is placed into stable packages, then the source code that represents that design 
+    will be difficult to change. This could make the design inflexible. 
+    How can a package that is maximally stable (/ = 0) be flexible enough to withstand change? 
+    The answer is to be found in the OCR This principle tells us that it is possible and 
+    desirable to create classes that are flexible enough to be extended without requiring 
+    modification. What kind of classes conforms to this principle? Abstract classes.
+
+  6 The Stable-Abstractions Principle (SAP)
+  (A package should be as abstract as it is stable.)
+
+  This principle sets up a relationship between stability and abstractness. 
+  It says that a stable package should also be abstract so that its stability does not prevent 
+  it from being extended. On the other hand, it says that an instable package should be 
+  concrete since its instability allows the concrete code within it to be easily changed.
+
+
+Details should depend on the major architectural desicions of the system and should not
+be depended on.
+
+The bulk of executable code should be in packages taht have few or de dependents. 
+The code in those packages is tremendously flexible; it can be changed without affecting 
+many other parts of the project.
+
+The most general packages of the system should contain the least amount of executable code.
+These packages are heavily dependend on, but depend on nothing.
+
+The upside-down structure, with highly independent and responsible generalities at the bottom,
+and highly responsible and dependent details at the top, is the hallmark 
+of object oriented design.
+
